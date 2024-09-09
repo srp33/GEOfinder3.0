@@ -1,0 +1,8 @@
+README
+chroma.sqlite3
+*/*.bin
+*.tsv.gz
+error.txt
+AllGEO.tsv.gz
+gte-large.tsv.gz
+collectionFiles

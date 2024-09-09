@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GSE Search</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        .grayed-out {
+            color: #888888; /* Gray color */
+        }
+        .submit-container {
+            /* Add styles for submit button */
+            float: right; 
+            margin-right: 25px; 
+            margin-top: -60px;
+        }
+    </style>
+    <style>
+        #results {
+            overflow: auto; /* Enable scrolling if content exceeds height */
+        }
+    </style>
+</head>
+<body class="mx-6">
+<h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif"><u>Enter GEO Accession IDs or Keywords:</u></h1>
+
+<h1 class="mt-3 subtitle is-4 is-family-sans-serif"><u>Search by:</u></h1>
+<input type="radio" id="geoID" name="searchBy" value="geoID" checked>
+<label for="geoID">GEO IDs</label>
+<input type="radio" id="keyword" name="searchBy" value="keyword">
+<label for="keyword">Keywords</label><br><br>
+
+<textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
+
+<h1 class="mt-3 subtitle is-4 is-family-sans-serif"><u>Filters:</u></h1>
+<div class="columns">
+    <div class="column is-2"><strong>Species:</strong><br>
+        <input type="checkbox" id="human" name="human" value="human">
+        <label for="human">Homo sapiens</label><br>
+        <input type="checkbox" id="mouse" name="mouse" value="mouse">
+        <label for="mouse">Mus musculus</label><br>
+        <input type="checkbox" id="rat" name="rat" value="rat">
+        <label for="rat">Rattus</label><br>
+
+<!-- Additional checkboxes to add...
+        <input type="checkbox" id="yeast" name="yeast" value="yeast">
+        <label for="yeast">Saccharomyces cerevisiae</label><br>
+        <input type="checkbox" id="arabidopsis" name="arabidopsis" value="arabidopsis">
+        <label for="arabidopsis">Arabidopsis thaliana</label><br>
+        <input type="checkbox" id="virus1" name="virus1" value="virus1">
+        <label for="virus1">Human immunodeficiency virus 1</label><br>
+        <input type="checkbox" id="ecoli" name="ecoli" value="ecoli">
+        <label for="ecoli">E coli K-12</label><br>
+        <input type="checkbox" id="arabidopsis" name="arabidopsis" value="arabidopsis">
+        <label for="arabidopsis">Arabidopsis thaliana</label><br>
+        <input type="checkbox" id="clostridium" name="clostridium" value="clostridium">
+        <label for="clostridium">Clostridium beijerinckii</label><br>
+        <input type="checkbox" id="zebrafish" name="zebrafish" value="zebrafish">
+        <label for="zebrafish">Danio rerio</label><br>
+        <input type="checkbox" id="dog" name="dog" value="dog">
+        <label for="dog">Canis lupus familiaris</label><br>
+        <input type="checkbox" id="cattle" name="cattle" value="cattle">
+        <label for="cattle">Bos taurus</label><br>
+        <input type="checkbox" id="sea cucumber" name="sea cucumber" value="sea cucumber">
+        <label for="sea cucumber">Apostichopus japonicus</label><br>
+ --> 
+      
+    </div>
+    <div class="column is-2"><strong># Samples:</strong><br>
+        <input type="checkbox" id="a" name="a" value="1-10">
+        <label for="a">1-10</label><br>
+        <input type="checkbox" id="b" name="b" value="11-50">
+        <label for="b">11-50</label><br>
+        <input type="checkbox" id="c" name="c" value="51-100">
+        <label for="c">51-100</label><br>
+        <input type="checkbox" id="d" name="d" value="101-500">
+        <label for="d">101-500</label><br>
+        <input type="checkbox" id="e" name="e" value="501-1000">
+        <label for="e">501-1000</label><br>
+        <input type="checkbox" id="f" name="f" value="1000+">
+        <label for="f">1000+</label><br>
+    </div>
+    <div class="column is-2"><strong>Experiment Type:</strong><br>
+        <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing">
+        <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
+        <input type="checkbox" id="microarr" name="microarr" value="Microarray">
+        <label for="microarr">Expression profiling by array</label>
+    </div> 
+</div>
+
+<div class="submit-container">
+    <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
+</div>
+
+<script>
+$(document).ready(function() {
+    var searchType = 'geoID';
+
+    $('#inputText').keyup(function() {
+        var inputText = $(this).val();
+        if (inputText.length > 0) {
+            $('#submitButton').prop('disabled', false);
+            $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
+        } else {
+            $('#submitButton').prop('disabled', true);
+        }
+    });
+
+    $('input[type=radio][name=searchBy]').change(function() {
+        searchType = $(this).val(); 
+    });
+
+    $('#submitButton').click(function() {
+        var inputText = $('#inputText').val();
+        var checkboxValues = {};
+        
+        $('input[type=checkbox]').each(function() {
+            checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
+        });
+
+        $(this).prop('disabled', true); // Disable the button
+        $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
+
+        $.ajax({
+            type: 'POST',
+            url: '/query',
+            data: {
+                ids: inputText,
+                human: checkboxValues['human'],
+                mouse: checkboxValues['mouse'],
+                rat: checkboxValues['rat'],
+                a: checkboxValues['a'],
+                b: checkboxValues['b'],
+                c: checkboxValues['c'],
+                d: checkboxValues['d'],
+                e: checkboxValues['e'],
+                f: checkboxValues['f'],
+                rnaSeq: checkboxValues['rnaSeq'],
+                microarr: checkboxValues['microarr'],
+                searchType: searchType
+            },
+            success: function(response) {
+                // Handle success response
+                console.log(response);
+                $('#content').html(response);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+
+<div id="content"></div>
+
+</body>
+</html>
