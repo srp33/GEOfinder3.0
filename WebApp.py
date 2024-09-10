@@ -4,6 +4,7 @@ import re
 import traceback 
 import error_msg
 import generate_rows_helper
+import csv
 
 class WebApp:
 
@@ -84,6 +85,7 @@ class WebApp:
 
         if valid_ids:
             #print("Query by ids...")
+            print("***************** about to call generate_id_query_results, valid_ids =", valid_ids)
             results_ids = generate_rows_helper.generate_id_query_results(valid_ids)
         # elif words:
         #     #print("Query by keywords...")
@@ -204,4 +206,8 @@ Love, Anna :)
 9/9 
 - issue in make_dataframe, when we are making the species or experiment type dataframe how to handle when there are two types in one ID
 - problem is in line 30 of generate_rows_helper - that's where the dataframe breaks and becomes an empty dataframe. need to figure out how to write that line
+
+9/10
+- split based on the | in the TSV file before reading them into a dataframe 
+
 '''

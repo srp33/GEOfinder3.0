@@ -7,23 +7,23 @@ def make_dataframe(meta):
 
     print("in make_dataframe with ", meta)
 
-### This code is for a functional file, without unreadable characters (most recent AllGEO throws an error)
-#    with gzip.open("../AllGEO1.tsv.gz", "rt") as meta_file:
-
-#         data_frame = pd.read_csv(meta_file, sep="\t", nrows=300) 
-    
-
-### This code is to work with the broken file :)
+    ### This code is to work with the broken file :)
+    '''
     with gzip.open("../AllGEO.tsv.gz", "rt") as meta_file:
         lines = [next(meta_file) for n in range(50)]
         lines_str = "".join(lines)
         lines_as_file = StringIO(lines_str)
         data_frame = pd.read_csv(lines_as_file, sep="\t")
-        
-### workaround code ends here
+    '''        
+    ### workaround code ends here
+
+    ### This code is for a functional file, without unreadable characters (most recent AllGEO throws an error)
+    with gzip.open("../AllGEO.tsv.gz", "rt") as meta_file:
+        print("file successfully opened")
+        data_frame = pd.read_csv(meta_file, sep="\t", nrows=300) 
 
         meta_frame = data_frame[["GSE", meta]] 
-        print(meta_frame)
+        print("in make_dataframe, meta_ frame is: \n", meta_frame.head(55))
 
         '''
         for i in range(meta_frame.shape[0]):
