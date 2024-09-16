@@ -51,42 +51,37 @@ with gzip.open("../AllGEO.tsv.gz", "rt") as read_file:
 
         species_df = pd.read_csv('species.tsv', sep='\t')
         experiment_df = pd.read_csv('experiment_types.tsv', sep='\t')
-        # Merge the dataframes based on a common column
+
         filtered_df = pd.merge(species_df, experiment_df, on='GSE')
         # Write the merged dataframe to a new TSV file
         filtered_df.to_csv('filtered_file.tsv', sep='\t', index=False)
 
         allGEO_df = pd.read_csv('../AllGEO.tsv.gz', compression='gzip', sep='\t', on_bad_lines='warn')
-        filtered_allGEO = pd.merge(filtered_df, allGEO_df, on=['GSE', 'Species', 'Experiment_Type'])
+        filtered_allGEO = pd.merge(filtered_df, allGEO_df, on=['GSE'])
+        filtered_allGEO.drop(columns=["Title", "Overall_Design","Experiment_Type_y","Year_Released","GPL","GPL_Title","GPL_Technology","Species_y","Taxon_ID","SuperSeries_GSE","SubSeries_GSEs","PubMed_IDs"], inplace=True)
         filtered_allGEO.to_csv('filtered_allGEO.tsv', sep='\t', index=False)
 
-        ''' chatgpt solution that doesnt exactly work either
-        merged_df = pd.merge(filtered_df, allGEO_df, on='GSE', how='left', suffixes=('', '_allGEO'))
-        # Overwrite specific columns with data from filtered_df
-        # Assuming you want to overwrite columns that may have '_allGEO' suffix
-        for col in ['Species', 'Experiment_Type']:
-            if col + '_allGEO' in merged_df.columns:
-                merged_df[col] = merged_df[col + '_allGEO']
-                merged_df.drop(columns=[col + '_allGEO'], inplace=True)
+    #Making species and experiment type tsv files with relevant GSE ID's post-filtering
+        species_df = filtered_allGEO.drop(columns=["Experiment_Type_x","Summary","Num_Samples"])
+        species_df.to_csv('species_filtered.tsv', sep='\t', index=False)
 
-        # Write the final result to a new TSV file
-        merged_df.to_csv('filtered_allGEO.tsv', sep='\t', index=False)
-        '''
-
+        experiment_df = filtered_allGEO.drop(columns=["Species_x","Summary","Num_Samples"])
+        experiment_df.to_csv('experiment_types_filtered.tsv', sep='\t', index=False)
 
 #make num samples tsv file
 with open("filtered_allGEO.tsv", "r") as read_file:
-
     with open("num_samples.tsv", "w") as num_samples_file:
-
         line1 = read_file.readline()
         items = line1.rstrip("\n").split("\t")
+        num_samples_file.write("GSE\tNum_Samples\n")
+
+        print(items)
 
         # GSE = items[0], experiment = items[4], num_samples = items[6], species = items[10]
         for line in read_file:
             try:
                 items = line.rstrip("\n").split("\t")
-                num_samples = int(items[7])
+                num_samples = int(items[4])
                 if num_samples > 0 and num_samples < 11:
                     num_samples_file.write(f"{items[0]}\t1-10\n")
                 elif num_samples < 51:
@@ -102,7 +97,12 @@ with open("filtered_allGEO.tsv", "r") as read_file:
             except:
                 num_samples_file.write(f"{items[0]}\terror\n")
 
-
+'''
+# add num_samples to allGEO file
+num_samples_df = pd.read_csv('num_samples.tsv', sep='\t')
+filtered_allGEO = pd.merge(num_samples_df, allGEO_df, on=["Num_Samples"], how="left")
+#filtered_allGEO.to_csv('filtered_allGEO.tsv', sep='\t', index=False)
+'''
 
 
 
