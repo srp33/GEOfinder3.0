@@ -1,125 +1,43 @@
 import gzip 
 import pandas as pd
 
-with gzip.open("../AllGEO.tsv.gz", "rt") as read_file:
-    
-    with open("species.tsv", "w") as species_file, \
-        open("experiment_types.tsv", "w") as experiment_file, \
-        open("num_samples.tsv", "w") as num_samples_file:
+with gzip.open("../AllGEO.tsv.gz", "rt") as read_file: 
+    with open("filtered_AllGEO.tsv", "w") as filtered_file:
 
         line1 = read_file.readline()
         items = line1.rstrip("\n").split("\t")
-        # print(items)
 
-        species_file.write("GSE\tSpecies\n")
-        experiment_file.write("GSE\tExperiment_Type\n")
+        filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSummary\n")
 
         # GSE = items[0], experiment = items[4], num_samples = items[6], species = items[10]
         for line in read_file:
             items = line.rstrip("\n").split("\t")
+            species = ""
+            experiment_type = ""
 
-            #Note to Abby: If you want, you can make this one function for both species and experiment filtering :)
-            #make species tsv file:
+            #define the species name
             if("|" in items[10]):
                 multiple_species = items[10].split("|")
-                for species in multiple_species:
-                    if species == "Homo sapiens":
-                        species_file.write(f"{items[0]}\t{species}\n")
-            else:
-                species = items[10]
-                if species == "Homo sapiens":
-                    species_file.write(f"{items[0]}\t{items[10]}\n")
-            
-            ''' should we do this? (it would be outside of the for loop and we would need to create another)
-            #merge homo sapien filtered data with allGEO file by GEO ID before filtering out experiment types
-            species_df = pd.read_csv('species.tsv', sep='\t')
-            allGEO_df = pd.read_csv('../AllGEO.tsv.gz', compression='gzip', sep='\t', on_bad_lines='warn')
-            '''
+                if "Homo sapiens" in multiple_species:
+                    species = " | ".join(multiple_species)
+            elif items[10] == "Homo sapiens":
+                    species = items[10]
 
-            #make experiment type tsv file:
+            #define the experiment type
             if("|" in items[4]):
                 multiple_types = items[4].split("|")
+                valid_types = []
                 for types in multiple_types:
                     if types == "Expression profiling by high throughput sequencing" or types == "Expression profiling by array":
-                        experiment_file.write(f"{items[0]}\t{types}\n")
+                        valid_types.append(types)
+                valid_types.sort()
+                experiment_type = " | ".join(valid_types)
+                
             else:
                 types = items[4]
                 if types == "Expression profiling by high throughput sequencing" or types == "Expression profiling by array":
-                    experiment_file.write(f"{items[0]}\t{types}\n")
+                    experiment_type = types
 
-
-
-        species_df = pd.read_csv('species.tsv', sep='\t')
-        experiment_df = pd.read_csv('experiment_types.tsv', sep='\t')
-
-        filtered_df = pd.merge(species_df, experiment_df, on='GSE')
-        # Write the merged dataframe to a new TSV file
-        filtered_df.to_csv('filtered_file.tsv', sep='\t', index=False)
-
-        allGEO_df = pd.read_csv('../AllGEO.tsv.gz', compression='gzip', sep='\t', on_bad_lines='warn')
-        filtered_allGEO = pd.merge(filtered_df, allGEO_df, on=['GSE'])
-        filtered_allGEO.drop(columns=["Title", "Overall_Design","Experiment_Type_y","Year_Released","GPL","GPL_Title","GPL_Technology","Species_y","Taxon_ID","SuperSeries_GSE","SubSeries_GSEs","PubMed_IDs"], inplace=True)
-        filtered_allGEO.to_csv('filtered_allGEO.tsv', sep='\t', index=False)
-
-    #Making species and experiment type tsv files with relevant GSE ID's post-filtering
-        species_df = filtered_allGEO.drop(columns=["Experiment_Type_x","Summary","Num_Samples"])
-        species_df.to_csv('species_filtered.tsv', sep='\t', index=False)
-
-        experiment_df = filtered_allGEO.drop(columns=["Species_x","Summary","Num_Samples"])
-        experiment_df.to_csv('experiment_types_filtered.tsv', sep='\t', index=False)
-
-#make num samples tsv file
-with open("filtered_allGEO.tsv", "r") as read_file:
-    with open("num_samples.tsv", "w") as num_samples_file:
-        line1 = read_file.readline()
-        items = line1.rstrip("\n").split("\t")
-        num_samples_file.write("GSE\tNum_Samples\n")
-
-        print(items)
-
-        # GSE = items[0], experiment = items[4], num_samples = items[6], species = items[10]
-        for line in read_file:
-            try:
-                items = line.rstrip("\n").split("\t")
-                num_samples = int(items[4])
-                if num_samples > 0 and num_samples < 11:
-                    num_samples_file.write(f"{items[0]}\t1-10\n")
-                elif num_samples < 51:
-                    num_samples_file.write(f"{items[0]}\t11-50\n")
-                elif num_samples < 101:
-                    num_samples_file.write(f"{items[0]}\t51-100\n")
-                elif num_samples < 501:
-                    num_samples_file.write(f"{items[0]}\t101-500\n")
-                elif num_samples < 1001:
-                    num_samples_file.write(f"{items[0]}\t501-1000\n")
-                else:
-                    num_samples_file.write(f"{items[0]}\t1000+\n")
-            except:
-                num_samples_file.write(f"{items[0]}\terror\n")
-
-'''
-# add num_samples to allGEO file
-num_samples_df = pd.read_csv('num_samples.tsv', sep='\t')
-filtered_allGEO = pd.merge(num_samples_df, allGEO_df, on=["Num_Samples"], how="left")
-#filtered_allGEO.to_csv('filtered_allGEO.tsv', sep='\t', index=False)
-'''
-
-
-
-
-
-
-
-
-            
-
-
-
-        
-       
-
-
-        
-
-    
-
+            #write the data to filtered_file
+            if (species and experiment_type):
+                filtered_file.write(f"{items[0]}\t{species}\t{experiment_type}\t{items[6]}\t{items[2]}\n")
