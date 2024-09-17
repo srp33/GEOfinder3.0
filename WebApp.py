@@ -207,7 +207,23 @@ Love, Anna :)
 - issue in make_dataframe, when we are making the species or experiment type dataframe how to handle when there are two types in one ID
 - problem is in line 30 of generate_rows_helper - that's where the dataframe breaks and becomes an empty dataframe. need to figure out how to write that line
 
-9/10
+9/10 TO-DO
 - split based on the | in the TSV file before reading them into a dataframe 
+- error to figure out: lines 76 and 77 of generate_rows_helper, collection may not be created properly?
 
+- start: go over how to work with TSV files, when there are multiple species/experiment types in one line split them
+- get a list of all unique values for species/experiment types to make sure we know what we have
+- filter out species that aren't homo sapiens, filter out experiment types that aren't microarray or RNA sequencing
+- make dataframes with those
+- remove the species filter 
+
+9/12
+- question for dr piccolo: should we zip the new tsv files we created? 
+- note for dr. piccolo: Skipping line 63782: expected 15 fields, saw 16 AND Skipping line 77418: expected 15 fields, saw 16
+- some sort of issue with GSE220181-GSE220264 lines(29418 - 28495 in num_samples.tsv)
+- will making big tsv files break my computer?
+
+9/16
+- do we need to make a num_samples tsv file first? we will want to display the actual # of samples when we pull the data so we could wait to make the "ranges" when we make the dataframe?
+- next step: make dataframes and filter 
 '''
