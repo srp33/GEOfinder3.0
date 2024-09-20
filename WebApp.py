@@ -10,8 +10,12 @@ class WebApp:
 
     @cherrypy.expose
     def index(self):
-        #print(f"\n\n\n dictionary: \n\n\n {simpleDictionary}")
         try:
+            '''
+            with gzip.open("filtered_AllGEO.tsv", "rt") as meta_file:
+                data_frame = pd.read_csv(meta_file, sep="\t")
+            '''
+            print("in index")
             return self.top_half_html()
         except:
             with open("error.txt", "w") as error_file:
@@ -20,16 +24,16 @@ class WebApp:
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
-    def query(self, ids, human="", mouse="", rat="", a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", searchType="geoID"):
-        #print("\nReceived input:", ids, human, mouse, rat, a, b, c, d, e, f, rnaSeq, microarr)
-        #print(f"searchType: {searchType}, type: {type(searchType)}")
+    def query(self, ids, human="", mouse="", rat="", a="", b="", c="", d="", e="", f="", rnaSeq="", microarr=""):
+        print("in query")
+        #print("\nin query, received input:", ids, human, mouse, rat, a, b, c, d, e, f, rnaSeq, microarr)
 
         metadata_dct = self.make_metadata_dct([human, mouse, rat], [a, b, c, d, e, f], [rnaSeq, microarr])
         
-        print(f"\n\n\nIn query, metadata_dct:{metadata_dct}\n\n\n\n")
+        #print(f"\n\n\nIn query, metadata_dct:{metadata_dct}\n\n\n\n")
 
         try:
-            return self.bottom_half_html(ids, metadata_dct, searchType)
+            return self.bottom_half_html(ids, metadata_dct)
         except:
             with open("error.txt", "w") as error_file:
                 traceback.print_exc(file=error_file)
@@ -53,14 +57,14 @@ class WebApp:
             html_str = top_html.read()
             return html_str
     
-    def bottom_half_html(self, ids, metadata_dct, searchType):
-        #print("\n in bottom_half()", ids, metadata_dct, searchType)
+    def bottom_half_html(self, ids, metadata_dct):
+        #print("\n in bottom_half()", ids, metadata_dct)
         return f"""
         
         <div class="columns is-centered" id="results">
             <div class="columns is-three-quarters">
                 <table class="table is-size-medium" id="myTable" border="1">
-                    {self.handle_input_ids(ids, metadata_dct, searchType)}
+                    {self.handle_input_ids(ids, metadata_dct)}
                 </table>
             </div>
         </div>
@@ -72,55 +76,13 @@ class WebApp:
         </html>
         """
 
-    #calls generate_query_results and writes results in html code, to display results in a table 
-    def generate_rows(valid_ids=[], words="", metadata_dct={}):
-        print("\nGenerate_rows:", valid_ids, words, metadata_dct)
-
-        filtered_df = generate_rows_helper.filter_by_metas(metadata_dct)
-        print("filtered df:\n", filtered_df.head())
-        
-        filtered_ids = filtered_df["GSE"].to_list()
-        # print("filtered ids: ", filtered_ids)
-        # print("length: ", len(filtered_ids))
-
-        if valid_ids:
-            #print("Query by ids...")
-            print("***************** about to call generate_id_query_results, valid_ids =", valid_ids)
-            results_ids = generate_rows_helper.generate_id_query_results(valid_ids)
-        # elif words:
-        #     #print("Query by keywords...")
-        #     results_ids = generate_rows_helper.generate_keyword_query_results(words)
-        else:
-            print("\nNo inputs in generate_rows!!\n")
-        # print(f"results_ids: {results_ids}")
-        
-        match_ids = [value for value in results_ids if value in filtered_ids]
-        # print("match ids: ", match_ids)
-
-
-        rows = '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>' + \
-                '<tr> <th>GSE ID</th> <th>Summary</th> <th>Species</th> <th># Samples</th> <th>Experiment Type</th></tr>'
-
-        for id in match_ids:
-
-            line = filtered_df[filtered_df["GSE"] == id]
-
-            rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
-                <td>{line["Summary"].values[0]}</td> \
-                <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
-                <td>{line["Experiment_Type"].values[0]}</td> </tr>'
-
-        return rows
-
     #checks for invalid input, if all input is valid then calls generate_rows 
-    def handle_input_ids(self, ids, metadata_dct, searchType):
-        print("\nHandle_input_ids:", ids, metadata_dct, searchType)
+    def handle_input_ids(self, ids, metadata_dct):
+        print("\nHandle_input_ids:", ids, metadata_dct)
         
         if (ids == ""):
-            return ""
-        
-        elif searchType=="geoID":
-
+            return ""  
+        else:
             id_lst = re.split(r"\n|,",ids.strip())
             bad_format_ids = []
             not_found_ids = []   # we no longer have a comprehensive list of ids, to check if id is in our database
@@ -143,15 +105,38 @@ class WebApp:
             else:
                 #print("\nCalling generate rows with ids", valid_ids, metadata_dct)
                 return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
- 
-        elif searchType=="keyword":
-            words = ids.strip()
-            #print("\nCalling generate rows with keywords", words, metadata_dct)
-            return WebApp.generate_rows(words=words, metadata_dct=metadata_dct)
 
+    #calls generate_query_results and writes results in html code, to display results in a table 
+    def generate_rows(valid_ids=[], metadata_dct={}):
+        print("\nGenerate_rows:", valid_ids, metadata_dct, "Df:", data_frame)
+
+        filtered_df = generate_rows_helper.filter_by_metas(metadata_dct)
+        
+        filtered_ids = filtered_df["GSE"].to_list()
+
+        if valid_ids:
+            results_ids = generate_rows_helper.generate_id_query_results(valid_ids)
+        # elif words:
+        #     #print("Query by keywords...")
+        #     results_ids = generate_rows_helper.generate_keyword_query_results(words)
         else:
-            print("\nNo inputs in handle_input_ids!!\n")
+            print("\nNo inputs in generate_rows!!\n")
+        
+        match_ids = [value for value in results_ids if value in filtered_ids]
 
+        rows = '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>' + \
+                '<tr> <th>GSE ID</th> <th>Summary</th> <th>Species</th> <th># Samples</th> <th>Experiment Type</th></tr>'
+
+        for id in match_ids:
+
+            line = filtered_df[filtered_df["GSE"] == id]
+
+            rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
+                <td>{line["Summary"].values[0]}</td> \
+                <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
+                <td>{line["Experiment_Type"].values[0]}</td> </tr>'
+
+        return rows
 
 if __name__ == '__main__':
     cherrypy.quickstart(WebApp(), '/')
@@ -220,10 +205,14 @@ Love, Anna :)
 9/12
 - question for dr piccolo: should we zip the new tsv files we created? 
 - note for dr. piccolo: Skipping line 63782: expected 15 fields, saw 16 AND Skipping line 77418: expected 15 fields, saw 16
-- some sort of issue with GSE220181-GSE220264 lines(29418 - 28495 in num_samples.tsv)
 - will making big tsv files break my computer?
 
 9/16
 - do we need to make a num_samples tsv file first? we will want to display the actual # of samples when we pull the data so we could wait to make the "ranges" when we make the dataframe?
 - next step: make dataframes and filter 
+
+9/17
+- open AllGEO to see what the problem is on those lines
+- 1. make data frame from filtered tsv file when you start the webapp (before user inputs anything)
+- 2. when user queries, make a copy of the dataframe and filter - experiment_type.startswith("array") or .endswith("sequencing"), num_samples is an exact match
 '''
