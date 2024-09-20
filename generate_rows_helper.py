@@ -1,17 +1,19 @@
 import chromadb
-import gzip
 import numpy as np
+import pandas as pd
    
-
 def filter_by_metas(metadata_dct):
         
-    with gzip.open("filtered_AllGEO.tsv", "rt") as meta_file:
+    with open("filtered_AllGEO.tsv", "r") as meta_file:
         data_frame = pd.read_csv(meta_file, sep="\t") 
 
     df_copy = data_frame.copy(deep=True)
+    print("Df copy:", df_copy)
 
     if(metadata_dct["Experiment_Type"]):
         print(metadata_dct["Experiment_Type"])
+        df_copy = df_copy[df_copy["Experiment_Type"].startswith("Expression profiling by array" | df_copy["Experiment_Type"].endswith("Expression profiling by high throughput sequencing"))]
+        print(df_copy.head())
     
     if(metadata_dct["Num_Samples"]):
         print(metadata_dct["Num_Samples"])
@@ -60,6 +62,10 @@ def generate_id_query_results(input_ids):
     #print(f"\n\nSimilarity Results: {similarityResults}\n")
     return similarityResults["ids"][0]
 
+
+fake_dictionary = {"Species":[], "Experiment_Type":[],"Num_Samples":[]}
+
+filter_by_metas(fake_dictionary)
 
 '''
 #returns a dictionary of the closest results to the user's keyword input
