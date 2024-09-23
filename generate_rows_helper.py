@@ -12,7 +12,7 @@ def filter_by_metas(metadata_dct):
 
     if(metadata_dct["Experiment_Type"]):
         #print(metadata_dct["Experiment_Type"])
-        df_copy = df_copy[df_copy["Experiment_Type"].startswith("Expression profiling by array" | df_copy["Experiment_Type"].endswith("Expression profiling by high throughput sequencing"))]
+        df_copy = df_copy[df_copy["Experiment_Type"].str.startswith("Expression profiling by array") | df_copy["Experiment_Type"].str.endswith("Expression profiling by high throughput sequencing")]
         #print(df_copy.head())
     
     if(metadata_dct["Num_Samples"]):
