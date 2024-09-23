@@ -24,11 +24,11 @@ class WebApp:
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
-    def query(self, ids, human="", mouse="", rat="", a="", b="", c="", d="", e="", f="", rnaSeq="", microarr=""):
+    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr=""):
         print("in query")
-        #print("\nin query, received input:", ids, human, mouse, rat, a, b, c, d, e, f, rnaSeq, microarr)
+        #print("\nin query, received input:", ids, a, b, c, d, e, f, rnaSeq, microarr)
 
-        metadata_dct = self.make_metadata_dct([human, mouse, rat], [a, b, c, d, e, f], [rnaSeq, microarr])
+        metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr])
         
         #print(f"\n\n\nIn query, metadata_dct:{metadata_dct}\n\n\n\n")
 
@@ -41,10 +41,8 @@ class WebApp:
 
     #Internal:
 
-    def make_metadata_dct(self, species, num_samples, experiment_type):
+    def make_metadata_dct(self, num_samples, experiment_type):
         metadata_dct={}
-        if species:
-            metadata_dct["Species"] = [val for val in species if val]
         if num_samples:
             metadata_dct["Num_Samples"] = [val for val in num_samples if val]
         if experiment_type:
@@ -108,7 +106,7 @@ class WebApp:
 
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):
-        print("\nGenerate_rows:", valid_ids, metadata_dct, "Df:", data_frame)
+        print("\nGenerate_rows:", valid_ids, metadata_dct)
 
         filtered_df = generate_rows_helper.filter_by_metas(metadata_dct)
         
@@ -116,9 +114,6 @@ class WebApp:
 
         if valid_ids:
             results_ids = generate_rows_helper.generate_id_query_results(valid_ids)
-        # elif words:
-        #     #print("Query by keywords...")
-        #     results_ids = generate_rows_helper.generate_keyword_query_results(words)
         else:
             print("\nNo inputs in generate_rows!!\n")
         
@@ -141,78 +136,17 @@ class WebApp:
 if __name__ == '__main__':
     cherrypy.quickstart(WebApp(), '/')
 
+
+
+
 '''
-6/12
-- add in date info and update the experiment type value once we get the tsv file!
-- use tsv to create chromadb database (id, emb, metas). One at a time. This one will have less instances for our computer RAM
-- next: trying to get the ID's from our collection
-
-- trying to git push but it won't work!
-
-6/13 TO-DO
-- X autoscroll down for the error mesage
-- X change "human" filter to "homo sapiens"
-- make error message replace entire content of the screen?
-- left off working on line 268, figuring out avg embeddings/how to implement that now. worked on getting results for a single ID using the real data, 
-doing some HTML details 
-
-6/18 to-do
-- use notification class for error message, use class "is-hidden" and remove 'is-hidden" if an error occurs. when the user clicks submit, add "is-hidden"
-- when we create a collection, see if we can tell it what directory to put it in, if so put it in a collections directory and then put that in the git ignore file
-- put the problem into chatgpt "how to completely remove a large file from the history of the git repositroy"
-- create one pandas dataframe for each metadata attribute (in the num samples dataframe we'll have to put the num samples into one of our categories)
-
-6/19
-- how to query / filtering... if we query first and then filter, we might not get as many results back as the user wants
-- test for git to see if it picks up the change im making
-
-6/21
-- split code into multiple files for readability
-- began to add more species to the checkboxes in top_half_html (currently commented out)
-
-Abby! 
-It was a joy working with you! I loved your kindness, generosity, ingenuity, and ability to solve problems.
-I hope you have a great day!
-Love, Anna :)
-
-9/5
-- going through, trying to fix things. first of all, error.txt file is no longer being created, so I can't see what the error is.
-- smaller detail that needs to be done - fix javascript so that submit button is functional again once you start typing again, choose other filters, etc. 
-- question: line 77?
-- did we make a pandas dataframe?
-- where to put the allGEO file so that it gets accessed correctly?
-
-9/6
-- check make_metadata_dct function - when we don't select any filters, it should return a completely empty dictionary but it really returns {Species:[]...} etc
-- check line 134, are the valid id's being checked for whether they are actually found within our database?
-- error is in filter_by_metas, check line 79 here to see where things are going wrong 
-- where it's breaking: generate_rows_helper, lines 10-11. Issue with make_dataframe function - doesn't print the initial statement even and we don't know why 
-
-9/9 
-- issue in make_dataframe, when we are making the species or experiment type dataframe how to handle when there are two types in one ID
-- problem is in line 30 of generate_rows_helper - that's where the dataframe breaks and becomes an empty dataframe. need to figure out how to write that line
-
-9/10 TO-DO
-- split based on the | in the TSV file before reading them into a dataframe 
-- error to figure out: lines 76 and 77 of generate_rows_helper, collection may not be created properly?
-
-- start: go over how to work with TSV files, when there are multiple species/experiment types in one line split them
-- get a list of all unique values for species/experiment types to make sure we know what we have
-- filter out species that aren't homo sapiens, filter out experiment types that aren't microarray or RNA sequencing
-- make dataframes with those
-- remove the species filter 
-
-9/12
-- question for dr piccolo: should we zip the new tsv files we created? 
-- note for dr. piccolo: Skipping line 63782: expected 15 fields, saw 16 AND Skipping line 77418: expected 15 fields, saw 16
-- will making big tsv files break my computer?
-
-9/16
-- do we need to make a num_samples tsv file first? we will want to display the actual # of samples when we pull the data so we could wait to make the "ranges" when we make the dataframe?
-- next step: make dataframes and filter 
-
 9/17
 - open AllGEO to see what the problem is on those lines
 - 1. make data frame from filtered tsv file when you start the webapp (before user inputs anything)
 - 2. when user queries, make a copy of the dataframe and filter - experiment_type.startswith("array") or .endswith("sequencing"), num_samples is an exact match
+
+TO-DO
+- small thing: fix submit button functionality 
+- run "mkCollFromTSV.py" to make our collection
+- finish making our filtered df successfully 
 '''

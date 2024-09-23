@@ -8,16 +8,32 @@ def filter_by_metas(metadata_dct):
         data_frame = pd.read_csv(meta_file, sep="\t") 
 
     df_copy = data_frame.copy(deep=True)
-    print("Df copy:", df_copy)
+    print("Df copy before filtering:", df_copy.head())
 
     if(metadata_dct["Experiment_Type"]):
-        print(metadata_dct["Experiment_Type"])
+        #print(metadata_dct["Experiment_Type"])
         df_copy = df_copy[df_copy["Experiment_Type"].startswith("Expression profiling by array" | df_copy["Experiment_Type"].endswith("Expression profiling by high throughput sequencing"))]
-        print(df_copy.head())
+        #print(df_copy.head())
     
     if(metadata_dct["Num_Samples"]):
         print(metadata_dct["Num_Samples"])
+        '''
+        if num_samples > 0 and num_samples < 11:
+            samples_frame.iloc[index,1] = "1-10"
+        elif num_samples < 51:
+            samples_frame.iloc[index,1] = "11-50"
+        elif num_samples < 101:
+            samples_frame.iloc[index,1] = "51-100"
+        elif num_samples < 501:
+            samples_frame.iloc[index,1] = "101-500"
+        elif num_samples < 1001:
+            samples_frame.iloc[index,1] = "501-1000"
+        else:
+            samples_frame.iloc[index,1] = "1000+"
+        '''
         #dataFrame3 = dataFrame[(dataFrame["Height"] < 72) & (dataFrame["Weight"] > 200)]
+
+    print("in filter_by_metas, df_copy post-filtering= ", df_copy.head())
 
     match_ids = []
 
