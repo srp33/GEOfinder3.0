@@ -109,7 +109,7 @@ class WebApp:
         print("\nGenerate_rows:", valid_ids, metadata_dct)
 
         filtered_df = generate_rows_helper.filter_by_metas(metadata_dct)
-        
+
         filtered_ids = filtered_df["GSE"].to_list()
 
         if valid_ids:
@@ -149,4 +149,5 @@ TO-DO
 - small thing: fix submit button functionality 
 - run "mkCollFromTSV.py" to make our collection
 - finish making our filtered df successfully 
+- bulma - configure so that table rows alternate colors for readability
 '''
