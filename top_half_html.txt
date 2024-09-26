@@ -16,6 +16,12 @@
             margin-right: 25px; 
             margin-top: -60px;
         }
+        .table tbody tr:nth-child(even) {
+            background-color: #333333;
+        }
+        .table tbody tr:nth-child(odd) {
+            background-color: #555555;
+        }
     </style>
     <style>
         #results {
@@ -24,7 +30,7 @@
     </style>
 </head>
 <body class="mx-6">
-<h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif"><u>Enter GEO Accession IDs or Keywords:</u></h1>
+<h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif"><u>Enter GEO Accession IDs:</u></h1>
 
 <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
 
