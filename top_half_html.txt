@@ -56,6 +56,24 @@
         <input type="checkbox" id="microarr" name="microarr" value="Microarray">
         <label for="microarr">Expression profiling by array</label>
     </div> 
+    <div class="column is-2"><strong>Year Released:</strong><br>
+        <div class="filter">
+            <label for="sinceYear">Filter by year:</label>
+            <select id="sinceYear" onchange="filterResults()">
+                <option value="">Select a year</option>
+                <script>
+                    for (let year = 2024; year >= 2001; year--) {
+                        document.write(`<option value="${year}">Since ${year}</option>`);
+                    }
+                </script>
+            </select>
+            <div style="margin-top: 10px;">
+                <label for="startYear">Custom range: </label> <br>
+                <input type="number" id="startYear" placeholder="Start Year" min="2000" max="2023">
+                <input type="number" id="endYear" placeholder="End Year" min="2000" max="2023">
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="submit-container">
@@ -99,6 +117,9 @@ $(document).ready(function() {
                 f: checkboxValues['f'],
                 rnaSeq: checkboxValues['rnaSeq'],
                 microarr: checkboxValues['microarr'],
+                sinceYear: document.getElementById('sinceYear').value,
+                startYear: document.getElementById('startYear').value,
+                endYear: document.getElementById('endYear').value
             },
             success: function(response) {
                 // Handle success response

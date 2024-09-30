@@ -9,11 +9,13 @@ with gzip.open("AllGEO.tsv.gz", "rt") as read_file:
         items = line1.rstrip("\n").split("\t")
 
         #writes column headers to new file
-        filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSummary\n")
+        filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSummary\tYear_Released\n")
 
-        # GSE = items[0], experiment = items[4], num_samples = items[6], species = items[10]
+        # GSE = items[0], experiment = items[4], num_samples = items[6], species = items[10], Year_Released = items[5]
+        years = []
         for line in read_file:
             items = line.rstrip("\n").split("\t")
+            years.append(items[5])
             species = ""
             experiment_type = ""
 
@@ -41,4 +43,7 @@ with gzip.open("AllGEO.tsv.gz", "rt") as read_file:
 
             #write the relevant data to filtered_file
             if (species and experiment_type):
-                filtered_file.write(f"{items[0]}\t{species}\t{experiment_type}\t{items[6]}\t{items[2]}\n")
+                filtered_file.write(f"{items[0]}\t{species}\t{experiment_type}\t{items[6]}\t{items[2]}\t{items[5]}\n")
+
+    #list of all unique years in the data:
+    #['2001' '2002' '2003' '2004' '2005' '2006' '2007' '2008' '2009' '2010' '2011' '2012' '2013' '2014' '2015' '2016' '2017' '2018' '2019' '2020' '2021' '2022' '2023' '2024']

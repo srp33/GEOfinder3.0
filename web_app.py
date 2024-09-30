@@ -19,8 +19,9 @@ class WebApp:
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
-    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr=""):
+    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", sinceYear="", startYear="", endYear=""):
         metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr])
+        print("since year: ", sinceYear, "start year: ", startYear, "End year: ", endYear)
         try:
             return self.bottom_half_html(ids, metadata_dct)
         except:
@@ -124,17 +125,21 @@ if __name__ == '__main__':
 
 
 '''
-9/17
+filter/query process
 - 1. make data frame from filtered tsv file when you start the webapp (before user inputs anything)
 - 2. when user queries, make a copy of the dataframe and filter - experiment_type.startswith("array") or .endswith("sequencing"), num_samples is an exact match
 
 TO-DO
-- small thing: fix submit button functionality 
-- bulma - configure so that table rows alternate colors for readability
 - if filtering by year, look for info in "6/4 update" email chain w Dr. Piccolo
 
 questions:
 - lines 39-49 of helper, is there a better way to merge?
 - where can we store the list of gse ids ? So that it doesn't have to be reloaded each time (helper line 102)
 - in helper line 74 we have num_results=50, is that the number we want to stick with?
+- should we deny a user from being able to select a year dropdown and add a custom range, if so how? javascript?
+   otherwise if they're allowed to do both, which value should overwrite the other?
+
+9/30
+- getting the webapp working on amanda's computer
+- look at other filtering options
 '''
