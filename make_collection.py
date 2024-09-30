@@ -6,7 +6,7 @@ import gzip
 chroma_client = chromadb.PersistentClient(path="./collectionFiles")
 geo_collection = chroma_client.create_collection(name="geo_collection")
 
-with gzip.open("../gte-large.tsv.gz") as gse_emb_file:
+with gzip.open("gte-large.tsv.gz") as gse_emb_file:
     for line in gse_emb_file:
         
         line_items = line.decode().rstrip("\n").split("\t")

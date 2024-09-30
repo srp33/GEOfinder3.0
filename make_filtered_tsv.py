@@ -2,7 +2,7 @@ import gzip
 import pandas as pd
 
 #filters the AllGEO.tsv.gz file to remove irrelevant species and experiment types. Creates new file filtered_AllGEO.tsv
-with gzip.open("../AllGEO.tsv.gz", "rt") as read_file: 
+with gzip.open("AllGEO.tsv.gz", "rt") as read_file: 
     with open("filtered_AllGEO.tsv", "w") as filtered_file:
 
         line1 = read_file.readline()

@@ -131,6 +131,7 @@ if __name__ == '__main__':
 TO-DO
 - small thing: fix submit button functionality 
 - bulma - configure so that table rows alternate colors for readability
+- if filtering by year, look for info in "6/4 update" email chain w Dr. Piccolo
 
 questions:
 - lines 39-49 of helper, is there a better way to merge?
