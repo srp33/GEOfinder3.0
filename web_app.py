@@ -19,9 +19,9 @@ class WebApp:
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
-    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", sinceYear="", startYear="", endYear=""):
-        metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr])
-        print("since year: ", sinceYear, "start year: ", startYear, "End year: ", endYear)
+    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
+        metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr], [startYear, endYear])
+        print("metadata_dct", metadata_dct)
         try:
             return self.bottom_half_html(ids, metadata_dct)
         except:
@@ -32,12 +32,14 @@ class WebApp:
     #Internal:
 
     #returns dictionary containing the user's filter selections
-    def make_metadata_dct(self, num_samples, experiment_type):
+    def make_metadata_dct(self, num_samples, experiment_type, years):
         metadata_dct={}
         if num_samples:
             metadata_dct["Num_Samples"] = [val for val in num_samples if val]
         if experiment_type:
             metadata_dct["Experiment_Type"] = [val for val in experiment_type if val]
+        if years:
+            metadata_dct["Years"] = [val for val in years if val]
         return metadata_dct
 
     #renders the starting page
@@ -53,7 +55,7 @@ class WebApp:
         <div class="columns is-centered" id="results">
             <div class="columns is-three-quarters">
                 <table class="table is-size-medium" id="myTable" border="1">
-                    {self.handle_input_ids(ids, metadata_dct)}
+                    {self.validate_ids(ids, metadata_dct)}
                 </table>
             </div>
         </div>
@@ -66,9 +68,10 @@ class WebApp:
         """
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
-    def handle_input_ids(self, ids, metadata_dct):
+    def validate_ids(self, ids, metadata_dct):
         database_ids = helper.generate_database_ids()
         
+        #validates ID input
         if (ids == ""):
             return ""  
         else:
@@ -86,11 +89,25 @@ class WebApp:
                     not_found_ids.append(id)
                 else: 
                     valid_ids.append(id)
+
+        #validates year input          
+        bad_format_years = []
+        valid_years = []
+
+        if(int(metadata_dct["Years"][0]) > int(metadata_dct["Years"][1])):
+            bad_format_years.append(metadata_dct["Years"][0])
+            bad_format_years.append(metadata_dct["Years"][1])
+        else:
+            for year in metadata_dct["Years"]:
+                if not re.search(r"^\d{4}$",year):
+                    bad_format_years.append(year)
+                elif int(year)>=2001 and int(year)<=2024:
+                    valid_years.append(year)
             
             #renders error message on screen if user has input an invalid ID
-            if bad_format_ids or not_found_ids:    
+            if bad_format_ids or not_found_ids or bad_format_years:    
                 return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                    error_msg.invalid_id_msg(bad_format_ids, not_found_ids, valid_ids)
+                    error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years, valid_years)
             #if all entered ID's were valid, calls generate_rows to get results
             else:
                 return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
@@ -136,10 +153,17 @@ questions:
 - lines 39-49 of helper, is there a better way to merge?
 - where can we store the list of gse ids ? So that it doesn't have to be reloaded each time (helper line 102)
 - in helper line 74 we have num_results=50, is that the number we want to stick with?
-- should we deny a user from being able to select a year dropdown and add a custom range, if so how? javascript?
-   otherwise if they're allowed to do both, which value should overwrite the other?
 
 9/30
 - getting the webapp working on amanda's computer
 - look at other filtering options
+
+10/1
+- add super series on table
+- add column to filtered_AllGEO that has the range of num samples - filter "if num samples column value in list of filters from metadata dct"
+- generate database ids from global dataframe using tolist function of pandas --> convert that list to a set
+- later, once we have everything else done, explore how to have num_results>50 with multiple pages (consistent with the paper to use 1000)
+- option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
+- webapp name - GEOfinder, make logo
+- add footer - BYU disclaimers, etc (copy basic one from codebuddy)
 '''

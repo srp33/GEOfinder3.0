@@ -16,7 +16,7 @@ def render_error():
     """
 
 
-def invalid_id_msg(bad_format_ids, not_found_ids, valid_ids):
+def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years, not_found_years, valid_years):
     error_message = ""
     if bad_format_ids:
         error_message += f"<tr><td>Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}</td></tr>"
@@ -24,4 +24,10 @@ def invalid_id_msg(bad_format_ids, not_found_ids, valid_ids):
         error_message +=f"<tr><td>The following IDs you entered were not found in our database: {', '.join(not_found_ids)}</td></tr>"
     if valid_ids:
         error_message +=f"<tr><td>The following IDs you entered were valid: {', '.join(valid_ids)}</td></tr>"
+    if bad_format_years:
+        error_message += f"<tr><td>Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}</td></tr>"
+    if not_found_years:
+        error_message +=f"<tr><td>The following years you entered were not found in our database: {', '.join(not_found_years)}</td></tr>"
+    if valid_years:
+        error_message +=f"<tr><td>The following years you entered were valid: {', '.join(valid_years)}</td></tr>"
     return error_message
