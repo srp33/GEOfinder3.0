@@ -27,7 +27,7 @@ def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years
     if bad_format_years:
         error_message += f"<tr><td>Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}</td></tr>"
     if not_found_years:
-        error_message +=f"<tr><td>The following years you entered were not found in our database: {', '.join(not_found_years)}</td></tr>"
+        error_message +=f"<tr><td>The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024</td></tr>"
     if valid_years:
         error_message +=f"<tr><td>The following years you entered were valid: {', '.join(valid_years)}</td></tr>"
     return error_message

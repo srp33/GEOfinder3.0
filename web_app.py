@@ -5,11 +5,21 @@ import traceback
 import error_msg
 import helper
 import csv
+import pandas as pd
+
+#global data_frame
+#global database_ids
 
 class WebApp:
 
     @cherrypy.expose
     def index(self):
+        '''
+        with open("filtered_AllGEO.tsv", "r") as meta_file:
+            data_frame = pd.read_csv(meta_file, sep="\t") 
+        #database_ids = set(data_frame["GSE"])
+        #print("database ids", list(database_ids)[:10])
+        '''
         try:
             return self.top_half_html()
         except:
@@ -55,7 +65,7 @@ class WebApp:
         <div class="columns is-centered" id="results">
             <div class="columns is-three-quarters">
                 <table class="table is-size-medium" id="myTable" border="1">
-                    {self.validate_ids(ids, metadata_dct)}
+                    {self.validate_input(ids, metadata_dct)}
                 </table>
             </div>
         </div>
@@ -68,7 +78,7 @@ class WebApp:
         """
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
-    def validate_ids(self, ids, metadata_dct):
+    def validate_input(self, ids, metadata_dct):
         database_ids = helper.generate_database_ids()
         
         #validates ID input
@@ -92,30 +102,44 @@ class WebApp:
 
         #validates year input          
         bad_format_years = []
+        not_found_years = []
         valid_years = []
+        startYear = metadata_dct["Years"][0]
+        endYear = metadata_dct["Years"][1]
 
-        if(int(metadata_dct["Years"][0]) > int(metadata_dct["Years"][1])):
-            bad_format_years.append(metadata_dct["Years"][0])
-            bad_format_years.append(metadata_dct["Years"][1])
-        else:
-            for year in metadata_dct["Years"]:
-                if not re.search(r"^\d{4}$",year):
-                    bad_format_years.append(year)
-                elif int(year)>=2001 and int(year)<=2024:
-                    valid_years.append(year)
-            
-            #renders error message on screen if user has input an invalid ID
-            if bad_format_ids or not_found_ids or bad_format_years:    
-                return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                    error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years, valid_years)
-            #if all entered ID's were valid, calls generate_rows to get results
+        if not re.search(r"^\d{4}$", startYear):
+            bad_format_years.append(startYear)
+        if int(startYear)<2001 or int(startYear)>2024:
+            not_found_years.append(startYear)
+
+        if not re.search(r"^\d{4}$", endYear):
+            bad_format_years.append(endYear)
+        if int(endYear)<2001 or int(endYear)>2024:
+            not_found_years.append(endYear)
+
+        if(bad_format_years==[] and not_found_years==[]):  
+            print("both valid formats and years")     
+            if(int(endYear) > int(startYear)):
+                valid_years.append(startYear)
+                valid_years.append(endYear)
             else:
-                return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+                bad_format_years.append(startYear)
+                bad_format_years.append(endYear)
+
+        #renders error message on screen if user has input an invalid ID or an invalid year
+        if bad_format_ids or not_found_ids or bad_format_years or not_found_years: 
+            print("error detected")   
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+                error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years, not_found_years, valid_years)
+        #if all entered ID's and years were valid, calls generate_rows to get results
+        else:
+            return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
 
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):
 
         filtered_df = helper.filter_by_metas(metadata_dct)
+        print("filtered_df: ", filtered_df.head())
         filtered_ids = filtered_df["GSE"].to_list()
 
         #queries the collection to get most similar results based on user's valid ID's
@@ -166,4 +190,21 @@ questions:
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 - webapp name - GEOfinder, make logo
 - add footer - BYU disclaimers, etc (copy basic one from codebuddy)
+
+questions:
+- if a user inputs a start range that's greater than the end range, should we just switch the years for them?
+
+10/3
+DONE:
+- year inputs
+- modified tsv file, added samples_range, year, super and sub series columns
+- changed filtering method for num samples
+- filtered by year
+
+TO-DO, in order
+- display super/sub series on table as output
+- display year on table (make sure filtering was done right)
+- fix errors in creating og df as global variable
+- create database ids as a global set 
+
 '''
