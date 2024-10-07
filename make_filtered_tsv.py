@@ -9,7 +9,7 @@ with gzip.open("AllGEO.tsv.gz", "rt") as read_file:
         items = line1.rstrip("\n").split("\t")
 
         #writes column headers to new file
-        filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSamples_Range\tSummary\tYear_Released\tSuperSeries_GSE\tSubSeries_GSEs\n")
+        filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSamples_Range\tSummary\tYear_Released\tSuperSeries_GSE\tSubSeries_GSE\n")
 
         # GSE = items[0], experiment = items[4], num_samples = items[6] species = items[10] 
         # Year_Released = items[5], SuperSeries_GSE = [12], SubSeries_GSEs = [13]

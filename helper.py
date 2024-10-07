@@ -2,16 +2,18 @@ import chromadb
 import numpy as np
 import pandas as pd
 import web_app
-
-#from web_app import data_frame
+from web_app import data_frame
    
 #returns a dataframe, filtered based on the user's selections
 def filter_by_metas(metadata_dct):
-
+    global data_frame
     #will delete these 2 lines later once we can get our global variables working
-    with open("filtered_AllGEO.tsv", "r") as meta_file:
-        data_frame = pd.read_csv(meta_file, sep="\t")
-    df_copy = data_frame.copy(deep=True)
+    '''with open("filtered_AllGEO.tsv", "r") as meta_file:
+        data_frame = pd.read_csv(meta_file, sep="\t")'''
+    print(data_frame.head())
+    df_copy = data_frame.copy(deep=True) 
+    print(df_copy.head())
+
 
     #filtering the dataframe copy based on experiment type
     if(metadata_dct["Experiment_Type"]):
@@ -28,7 +30,7 @@ def filter_by_metas(metadata_dct):
     
     #filter by years
     df_copy["Year_Released"] = pd.to_numeric(df_copy["Year_Released"], errors='coerce')
-    df_copy = df_copy[(df_copy["Year_Released"] > int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] < int(metadata_dct["Years"][1]))]
+    df_copy = df_copy[(df_copy["Year_Released"] >= int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] <= int(metadata_dct["Years"][1]))]
     
     print("first few lines of df copy post-filtering:", df_copy.head())
     return df_copy

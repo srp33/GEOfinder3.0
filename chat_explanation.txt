@@ -1,0 +1,53 @@
+The error message you’re seeing indicates that there's a problem with how you're trying to filter a DataFrame in Pandas. Let's break down the error and its context:
+
+### Error Breakdown
+
+1. **Traceback**:
+   - The traceback shows the sequence of function calls that led to the error. It starts from the `query` method and goes through `bottom_half_html`, `validate_input`, and finally to `filter_by_metas` in `helper.py`.
+
+2. **Specific Error**:
+   - The key part of the error is:
+     ```
+     ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().
+     ```
+   - This error occurs when you attempt to evaluate a Pandas Series in a boolean context where it expects a single boolean value (True or False).
+
+### The Problematic Line
+
+The offending line in your `filter_by_metas` function is:
+
+```python
+df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
+```
+
+### Why This Causes an Error
+
+- **Ambiguous Condition**: The expression `df_copy["Samples_Range"] in metadata_dct["Num_Samples"]` evaluates to a Series of boolean values, not a single boolean. In Python, the `in` operator checks membership, and when used with a Series, it returns an array of booleans. This is ambiguous when used for indexing.
+  
+### How to Fix It
+
+You likely want to filter the DataFrame such that you keep only the rows where the values in the `"Samples_Range"` column are contained in `metadata_dct["Num_Samples"]`. You should use the `.isin()` method for this:
+
+```python
+df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
+```
+
+### Corrected Function Example
+
+Here's how the corrected `filter_by_metas` function might look:
+
+```python
+def filter_by_metas(metadata_dct):
+    df_copy = df_copy.copy(deep=True)
+    df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
+    # Continue with any additional processing...
+    return df_copy
+```
+
+### Summary
+
+- The error occurs due to trying to use the `in` operator with a Pandas Series, which leads to ambiguous truth values.
+- Use `isin()` for filtering DataFrame columns based on membership in a list or Series.
+- Always ensure your filtering conditions return a clear boolean Series for indexing.
+
+If you need further clarification or additional help, feel free to ask!

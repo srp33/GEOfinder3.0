@@ -7,19 +7,22 @@ import helper
 import csv
 import pandas as pd
 
-#global data_frame
+global data_frame
+data_frame = pd.DataFrame()
+with open("filtered_AllGEO.tsv", "r") as meta_file:
+    data_frame = pd.read_csv(meta_file, sep="\t") 
 #global database_ids
 
 class WebApp:
 
     @cherrypy.expose
     def index(self):
-        '''
-        with open("filtered_AllGEO.tsv", "r") as meta_file:
-            data_frame = pd.read_csv(meta_file, sep="\t") 
+        global data_frame
+        
         #database_ids = set(data_frame["GSE"])
         #print("database ids", list(database_ids)[:10])
-        '''
+        print("In web_app, index: ", data_frame.head())
+        
         try:
             return self.top_half_html()
         except:
@@ -119,7 +122,7 @@ class WebApp:
 
         if(bad_format_years==[] and not_found_years==[]):  
             print("both valid formats and years")     
-            if(int(endYear) > int(startYear)):
+            if(int(endYear) >= int(startYear)):
                 valid_years.append(startYear)
                 valid_years.append(endYear)
             else:
@@ -150,7 +153,7 @@ class WebApp:
         match_ids = [value for value in results_ids if value in filtered_ids]
 
         rows = '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>' + \
-                '<tr> <th>GSE ID</th> <th>Summary</th> <th>Species</th> <th># Samples</th> <th>Experiment Type</th></tr>'
+                '<tr> <th>GSE ID</th> <th>Summary</th> <th>Species</th> <th># Samples</th> <th>Experiment Type</th> <th>Year Released</th><th>Super Series</th> <th>Sub Series</th></tr>'
 
         #prints data to table for each match ID
         for id in match_ids:
@@ -158,7 +161,10 @@ class WebApp:
             rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
                 <td>{line["Summary"].values[0]}</td> \
                 <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
-                <td>{line["Experiment_Type"].values[0]}</td> </tr>'
+                <td>{line["Experiment_Type"].values[0]}</td> \
+                <td>{line["Year_Released"].values[0]}</td> \
+                <td>{line["SuperSeries_GSE"].values[0]}</td> \
+                <td>{line["SubSeries_GSE"].values[0]}</td> <tr>'
         return rows
 
 if __name__ == '__main__':
@@ -183,8 +189,6 @@ questions:
 - look at other filtering options
 
 10/1
-- add super series on table
-- add column to filtered_AllGEO that has the range of num samples - filter "if num samples column value in list of filters from metadata dct"
 - generate database ids from global dataframe using tolist function of pandas --> convert that list to a set
 - later, once we have everything else done, explore how to have num_results>50 with multiple pages (consistent with the paper to use 1000)
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
@@ -200,11 +204,12 @@ DONE:
 - modified tsv file, added samples_range, year, super and sub series columns
 - changed filtering method for num samples
 - filtered by year
-
-TO-DO, in order
 - display super/sub series on table as output
 - display year on table (make sure filtering was done right)
+
+TO-DO, in order
 - fix errors in creating og df as global variable
 - create database ids as a global set 
+- fix table formatting (extend to end of screen on the right)
 
 '''
