@@ -7,21 +7,21 @@ import helper
 import csv
 import pandas as pd
 
+#make global data frame
 global data_frame
 data_frame = pd.DataFrame()
 with open("filtered_AllGEO.tsv", "r") as meta_file:
     data_frame = pd.read_csv(meta_file, sep="\t") 
+
 #global database_ids
+global database_ids
+database_ids = set(data_frame["GSE"])
 
 class WebApp:
 
     @cherrypy.expose
     def index(self):
         global data_frame
-        
-        #database_ids = set(data_frame["GSE"])
-        #print("database ids", list(database_ids)[:10])
-        print("In web_app, index: ", data_frame.head())
         
         try:
             return self.top_half_html()
@@ -82,8 +82,7 @@ class WebApp:
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
     def validate_input(self, ids, metadata_dct):
-        database_ids = helper.generate_database_ids()
-        
+        global database_ids
         #validates ID input
         if (ids == ""):
             return ""  
@@ -142,7 +141,6 @@ class WebApp:
     def generate_rows(valid_ids=[], metadata_dct={}):
 
         filtered_df = helper.filter_by_metas(metadata_dct)
-        print("filtered_df: ", filtered_df.head())
         filtered_ids = filtered_df["GSE"].to_list()
 
         #queries the collection to get most similar results based on user's valid ID's
@@ -205,8 +203,9 @@ DONE:
 - display year on table (make sure filtering was done right)
 
 TO-DO, in order
-- fix errors in creating og df as global variable
 - create database ids as a global set 
 - fix table formatting (extend to end of screen on the right)
 - flip logic for super/sub series
+
+#breaks for this ID: GSE233796, GSE233785
 '''

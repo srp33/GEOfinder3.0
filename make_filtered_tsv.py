@@ -44,17 +44,17 @@ with gzip.open("AllGEO.tsv.gz", "rt") as read_file:
                 if types == "Expression profiling by high throughput sequencing" or types == "Expression profiling by array":
                     experiment_type = types
 
-            #checks if it is a SuperSeries
+            #checks if the row contains a SuperSeries, which means it is a SubSeries
             if (items[12] == ""):
-                super_series = "No"
-            else: 
-                super_series = "Yes"   
-
-            #checks if it is a SubSeries
-            if (items[13] == ""):
                 sub_series = "No"
+            else: 
+                sub_series = "Yes"   
+
+            #checks if the row contains a SubSeries, meaning it is a SuperSeries
+            if (items[13] == ""):
+                super_series = "No"
             else:
-                sub_series = "Yes"
+                super_series = "Yes"
 
             #assigns range for num_samples
             if(num_samples <= 10):

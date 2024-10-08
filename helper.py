@@ -7,12 +7,7 @@ from web_app import data_frame
 #returns a dataframe, filtered based on the user's selections
 def filter_by_metas(metadata_dct):
     global data_frame
-    #will delete these 2 lines later once we can get our global variables working
-    '''with open("filtered_AllGEO.tsv", "r") as meta_file:
-        data_frame = pd.read_csv(meta_file, sep="\t")'''
-    print(data_frame.head())
     df_copy = data_frame.copy(deep=True) 
-    print(df_copy.head())
 
 
     #filtering the dataframe copy based on experiment type
@@ -26,19 +21,16 @@ def filter_by_metas(metadata_dct):
     #filtering the dataframe copy based on number of samples
     if(metadata_dct["Num_Samples"]):
         #add selected sample numbers to dataframe
-        df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
+        #df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
+        df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
     
     #filter by years
     df_copy["Year_Released"] = pd.to_numeric(df_copy["Year_Released"], errors='coerce')
     df_copy = df_copy[(df_copy["Year_Released"] >= int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] <= int(metadata_dct["Years"][1]))]
-    
-    print("first few lines of df copy post-filtering:", df_copy.head())
     return df_copy
 
 #returns a dictionary of the closest results to the user IDs input
 def generate_id_query_results(input_ids):
-
-    print("in generate_id_query_results, ids:", input_ids)
 
     chroma_client = chromadb.PersistentClient(path="./collectionFiles")
     my_collection = chroma_client.get_collection(name="geo_collection")
@@ -46,8 +38,12 @@ def generate_id_query_results(input_ids):
     input_embeddings = []
 
     for id in input_ids:
+        print("in for loop, id:", id)
         data_dict = my_collection.get(ids=id, include=["embeddings"])
+        print("data_dict: ", data_dict)
+        print("length of data_dict :", len(data_dict))
         input_embeddings.append(data_dict["embeddings"][0])
+
 
     input_embeddings = np.array(input_embeddings)
     avg_embedding = np.mean(input_embeddings, axis=0).tolist()
