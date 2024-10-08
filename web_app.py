@@ -195,9 +195,6 @@ questions:
 - webapp name - GEOfinder, make logo
 - add footer - BYU disclaimers, etc (copy basic one from codebuddy)
 
-questions:
-- if a user inputs a start range that's greater than the end range, should we just switch the years for them?
-
 10/3
 DONE:
 - year inputs
@@ -211,5 +208,5 @@ TO-DO, in order
 - fix errors in creating og df as global variable
 - create database ids as a global set 
 - fix table formatting (extend to end of screen on the right)
-
+- flip logic for super/sub series
 '''
