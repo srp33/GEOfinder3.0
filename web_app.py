@@ -10,14 +10,14 @@ import pandas as pd
 #make global data frame
 global data_frame
 data_frame = pd.DataFrame()
-with open("filtered_AllGEO.tsv", "r") as meta_file:
+with open("filtered_AllGEO.tsv", "r", encoding="utf-8") as meta_file:
     data_frame = pd.read_csv(meta_file, sep="\t") 
 
 #global database_ids
 global database_ids
-with open("filtered_AllGEO_ids.tsv", "r") as id_file:
+with open("filtered_AllGEO_ids.tsv", "r", encoding="utf-8") as id_file:
     all_geo_ids = pd.read_csv(id_file, sep="\t") 
-with open("gte_ids.tsv", "r") as id_file:
+with open("gte_ids.tsv", "r", encoding="utf-8") as id_file:
     gte_ids = pd.read_csv(id_file, sep="\t") 
 gte_ids_set = set(gte_ids['GSE'])
 all_geo_ids_set = set(all_geo_ids['GSE'])
@@ -32,7 +32,7 @@ class WebApp:
         try:
             return self.top_half_html()
         except:
-            with open("error.txt", "w") as error_file:
+            with open("error.txt", "w", encoding="utf-8") as error_file:
                 traceback.print_exc(file=error_file)
             return error_msg.render_error()
 
@@ -44,7 +44,7 @@ class WebApp:
         try:
             return self.bottom_half_html(ids, metadata_dct)
         except:
-            with open("error.txt", "w") as error_file:
+            with open("error.txt", "w", encoding="utf-8") as error_file:
                 traceback.print_exc(file=error_file)
             return error_msg.render_error()
 
@@ -175,30 +175,7 @@ if __name__ == '__main__':
 
 
 '''
-filter/query process
-- 1. make data frame from filtered tsv file when you start the webapp (before user inputs anything)
-- 2. when user queries, make a copy of the dataframe and filter - experiment_type.startswith("array") or .endswith("sequencing"), num_samples is an exact match
-
-TO-DO
-- if filtering by year, look for info in "6/4 update" email chain w Dr. Piccolo
-
-questions:
-- lines 39-49 of helper, is there a better way to merge?
-- where can we store the list of gse ids ? So that it doesn't have to be reloaded each time (helper line 102)
-- in helper line 74 we have num_results=50, is that the number we want to stick with?
-
-9/30
-- getting the webapp working on amanda's computer
-- look at other filtering options
-
-10/1
-- generate database ids from global dataframe using tolist function of pandas --> convert that list to a set
-- later, once we have everything else done, explore how to have num_results>50 with multiple pages (consistent with the paper to use 1000)
-- option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
-- webapp name - GEOfinder, make logo
-- add footer - BYU disclaimers, etc (copy basic one from codebuddy)
-
-10/3
+10/3 - 10/10
 DONE:
 - year inputs
 - modified tsv file, added samples_range, year, super and sub series columns
@@ -206,16 +183,17 @@ DONE:
 - filtered by year
 - display super/sub series on table as output
 - display year on table (make sure filtering was done right)
-
-TO-DO, in order
 - create database ids as a global set 
-- fix table formatting (extend to end of screen on the right)
 - flip logic for super/sub series
 
-#breaks for this ID: GSE233796, GSE233785
+TO-DO, in order
+- get it working on amanda's computer
+- fix table formatting (extend to end of screen on the right)
+- webapp name - GEOfinder, make logo
+- add footer - BYU disclaimers, etc (copy basic one from codebuddy)
+- explore how to have num_results>50 with multiple pages (consistent with the paper to use 1000)
+- option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 '''
-
-
 
 
 '''

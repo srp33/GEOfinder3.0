@@ -2,9 +2,9 @@ import gzip
 import pandas as pd
 
 #filters the AllGEO.tsv.gz file to remove irrelevant species and experiment types. Creates new file filtered_AllGEO.tsv
-with gzip.open("AllGEO.tsv.gz", "rt") as read_file: 
-    with open("filtered_AllGEO.tsv", "w") as filtered_file:
-        with open("filtered_AllGEO_ids.tsv", "w") as ids_file:
+with gzip.open("AllGEO.tsv.gz", "rt", encoding="utf-8") as read_file: 
+    with open("filtered_AllGEO.tsv", "w", encoding="utf-8") as filtered_file:
+        with open("filtered_AllGEO_ids.tsv", "w", encoding="utf-8") as ids_file:
 
             line1 = read_file.readline()
             items = line1.rstrip("\n").split("\t")
@@ -81,8 +81,8 @@ with gzip.open("AllGEO.tsv.gz", "rt") as read_file:
     #list of all unique years in the data:
     #['2001' '2002' '2003' '2004' '2005' '2006' '2007' '2008' '2009' '2010' '2011' '2012' '2013' '2014' '2015' '2016' '2017' '2018' '2019' '2020' '2021' '2022' '2023' '2024']
 
-with gzip.open("gte-large.tsv.gz", "rt") as read_file: 
-    with open("gte_ids.tsv", "w") as write_file:
+with gzip.open("gte-large.tsv.gz", "rt", encoding="utf-8") as read_file: 
+    with open("gte_ids.tsv", "w", encoding="utf-8") as write_file:
         write_file.write("GSE\n")
         for line in read_file:
             items = line.split("\t")
