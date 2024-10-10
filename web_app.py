@@ -15,7 +15,13 @@ with open("filtered_AllGEO.tsv", "r") as meta_file:
 
 #global database_ids
 global database_ids
-database_ids = set(data_frame["GSE"])
+with open("filtered_AllGEO_ids.tsv", "r") as id_file:
+    all_geo_ids = pd.read_csv(id_file, sep="\t") 
+with open("gte_ids.tsv", "r") as id_file:
+    gte_ids = pd.read_csv(id_file, sep="\t") 
+gte_ids_set = set(gte_ids['GSE'])
+all_geo_ids_set = set(all_geo_ids['GSE'])
+database_ids = gte_ids_set & all_geo_ids_set
 
 class WebApp:
 
@@ -82,7 +88,6 @@ class WebApp:
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
     def validate_input(self, ids, metadata_dct):
-        global database_ids
         #validates ID input
         if (ids == ""):
             return ""  
@@ -208,4 +213,18 @@ TO-DO, in order
 - flip logic for super/sub series
 
 #breaks for this ID: GSE233796, GSE233785
+'''
+
+
+
+
+'''
+#checks that we're merging the allGEo and gte-large ids correctly
+missing_ids = gte_ids_set - all_geo_ids_set
+
+overlapping_ids_list = list(overlap_ids)
+print("Number of overlapping GSE values:", len(overlapping_ids_list))
+missing_ids_list = list(missing_ids)
+print("Missing GSE values:", missing_ids_list)
+print("Number of missing GSE values:", len(missing_ids_list))
 '''
