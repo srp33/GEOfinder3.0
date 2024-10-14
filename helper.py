@@ -38,10 +38,7 @@ def generate_id_query_results(input_ids):
     input_embeddings = []
 
     for id in input_ids:
-        print("in for loop, id:", id)
         data_dict = my_collection.get(ids=id, include=["embeddings"])
-        print("data_dict: ", data_dict)
-        print("length of embeddings:", len(data_dict["embeddings"]))
         input_embeddings.append(data_dict["embeddings"][0])
 
 

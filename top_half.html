@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
+        body {
+            background-color: white;
+            color: black;
+        }
+        @media(prefers-color-scheme: dark) {
+            body {
+                background-color: black;
+                color: white;
+            }
+            .table tbody tr:nth-child(even) {
+            background-color: #333333;
+        }
+            .table tbody tr:nth-child(odd) {
+                background-color: #555555;
+            }
+        }
         .grayed-out {
             color: #888888; /* Gray color */
         }
@@ -17,10 +33,10 @@
             margin-top: -60px;
         }
         .table tbody tr:nth-child(even) {
-            background-color: #333333;
+            background-color: #cccccc;
         }
         .table tbody tr:nth-child(odd) {
-            background-color: #555555;
+            background-color: #eeeeee;
         }
     </style>
     <style>

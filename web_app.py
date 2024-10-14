@@ -63,7 +63,7 @@ class WebApp:
 
     #renders the starting page
     def top_half_html(self):
-        with open("top_half_html.txt") as top_html:
+        with open("top_half.html") as top_html:
             html_str = top_html.read()
             return html_str
     
