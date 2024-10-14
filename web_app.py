@@ -72,11 +72,9 @@ class WebApp:
         return f"""
         
         <div class="columns is-centered" id="results">
-            <div class="columns is-three-quarters">
-                <table class="table is-size-medium" id="myTable" border="1">
-                    {self.validate_input(ids, metadata_dct)}
-                </table>
-            </div>
+            <table class="table is-size-medium" id="myTable" border="1">
+                {self.validate_input(ids, metadata_dct)}
+            </table>
         </div>
         <script> // When results generated, reenable submit button and scroll down to results
             $('#submitButton').prop('disabled', false);

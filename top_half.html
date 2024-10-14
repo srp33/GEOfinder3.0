@@ -10,6 +10,10 @@
         body {
             color: black;
         }
+        .table {
+            width: 100%;
+            table-layout: auto;
+        }
         .table tbody tr:nth-child(even) {
             background-color: #cccccc;
         }
@@ -31,10 +35,11 @@
             color: #888888; /* Gray color */
         }
         .submit-container {
-            /* Add styles for submit button */
-            float: right; 
+            display: flex;
+            justify-content: flex-end;
             margin-right: 25px; 
             margin-top: -60px;
+            /*display: inline-block;  Or block if you want it on its own line */
         }
     </style>
     <style>
