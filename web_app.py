@@ -167,7 +167,7 @@ class WebApp:
                 <td>{line["Experiment_Type"].values[0]}</td> \
                 <td>{line["Year_Released"].values[0]}</td> \
                 <td>{line["SuperSeries_GSE"].values[0]}</td> \
-                <td>{line["SubSeries_GSE"].values[0]}</td> <tr>'
+                <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
         return rows
 
 if __name__ == '__main__':
