@@ -173,23 +173,14 @@ if __name__ == '__main__':
 
 
 '''
-10/3 - 10/10
-DONE:
-- year inputs
-- modified tsv file, added samples_range, year, super and sub series columns
-- changed filtering method for num samples
-- filtered by year
-- display super/sub series on table as output
-- display year on table (make sure filtering was done right)
-- create database ids as a global set 
-- flip logic for super/sub series
 
+10/14-10/20
 TO-DO, in order
-- get it working on amanda's computer
-- fix table formatting (extend to end of screen on the right)
+- have the filter boxes checked by default, let the user uncheck them and tweak logic - if they uncheck everything, return an error message
 - webapp name - GEOfinder, make logo
-- add footer - BYU disclaimers, etc (copy basic one from codebuddy)
-- explore how to have num_results>50 with multiple pages (consistent with the paper to use 1000)
+- fix about page in footer, add button to go back to GEO homepage
+- use bulma to have num_results>50 with multiple pages (consistent with the paper to use 1000)
+- finish writing abstract
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 '''
 
