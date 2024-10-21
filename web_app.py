@@ -75,11 +75,18 @@ class WebApp:
             <table class="table is-size-medium" id="myTable" border="1">
                 {self.validate_input(ids, metadata_dct)}
             </table>
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                <button class="pagination-previous" id="prev-btn">Previous</button>
+                <button class="pagination-next" id="next-btn">Next</button>
+            </nav>
         </div>
+
         <script> // When results generated, reenable submit button and scroll down to results
             $('#submitButton').prop('disabled', false);
-            results.scrollIntoView({{ behavior: "smooth", block: "start" }});
+            //Ensure you reference the results div correctly
+            document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
         </script>
+        <script src="pagination.js"></script>
         </body>
         </html>
         """
