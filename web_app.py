@@ -105,6 +105,17 @@ class WebApp:
                 else: 
                     valid_ids.append(id)
 
+        #make sure some boxes are checked
+        if metadata_dct["Num_Samples"] == []:
+            print("error detected")   
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+                error_msg.num_samples_error_msg() 
+        
+        if metadata_dct["Experiment_Type"] == []:
+            print("error detected")
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+                error_msg.experiment_error_msg() 
+
         #validates year input          
         bad_format_years = []
         not_found_years = []
@@ -132,10 +143,15 @@ class WebApp:
                 bad_format_years.append(endYear)
 
         #renders error message on screen if user has input an invalid ID or an invalid year
-        if bad_format_ids or not_found_ids or bad_format_years or not_found_years: 
+        if bad_format_ids or not_found_ids: 
             print("error detected")   
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids, bad_format_years, not_found_years, valid_years)
+                error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) 
+        if bad_format_years or not_found_years:
+            print("error detected")
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+                error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
+
         #if all entered ID's and years were valid, calls generate_rows to get results
         else:
             return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
@@ -173,18 +189,18 @@ if __name__ == '__main__':
 
 
 '''
-
 10/14-10/20
 TO-DO, in order
-- have the filter boxes checked by default, let the user uncheck them and tweak logic - if they uncheck everything, return an error message
 - webapp name - GEOfinder, make logo
-- fix about page in footer, add button to go back to GEO homepage
 - use bulma to have num_results>50 with multiple pages (consistent with the paper to use 1000)
 - finish writing abstract
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
+
+questions:
+- footer all the way at the bottom
+- won't let us uncheck "1000+" box 
+
 '''
-
-
 '''
 #checks that we're merging the allGEo and gte-large ids correctly
 missing_ids = gte_ids_set - all_geo_ids_set
