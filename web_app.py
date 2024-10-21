@@ -70,11 +70,26 @@ class WebApp:
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""
-        
         <div class="columns is-centered" id="results">
+            <caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>
             <table class="table is-size-medium" id="myTable" border="1">
-                {self.validate_input(ids, metadata_dct)}
+                <thead>
+                    <tr>
+                        <th>GSE ID</th>
+                        <th>Summary</th>
+                        <th>Species</th>
+                        <th># Samples</th>
+                        <th>Experiment Type</th>
+                        <th>Year Released</th>
+                        <th>Super Series</th>
+                        <th>Sub Series</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {self.validate_input(ids, metadata_dct)}
+                </tbody>
             </table>
+
             <nav class="pagination" role="navigation" aria-label="pagination">
                 <button class="pagination-previous" id="prev-btn">Previous</button>
                 <button class="pagination-next" id="next-btn">Next</button>
@@ -176,8 +191,7 @@ class WebApp:
         #creates a list of ID's, where the filtered ID's and query ID's overlap
         match_ids = [value for value in results_ids if value in filtered_ids]
 
-        rows = '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>' + \
-                '<tr> <th>GSE ID</th> <th>Summary</th> <th>Species</th> <th># Samples</th> <th>Experiment Type</th> <th>Year Released</th><th>Super Series</th> <th>Sub Series</th></tr>'
+        rows = ''
 
         #prints data to table for each match ID
         for id in match_ids:
@@ -200,12 +214,12 @@ if __name__ == '__main__':
 TO-DO, in order
 - webapp name - GEOfinder, make logo
 - use bulma to have num_results>50 with multiple pages (consistent with the paper to use 1000)
-- finish writing abstract
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 
 questions:
 - footer all the way at the bottom
 - won't let us uncheck "1000+" box 
+- where we left off monday: need to check line 1 of pagination.js
 
 '''
 '''
