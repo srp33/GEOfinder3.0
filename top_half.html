@@ -6,6 +6,7 @@
     <title>GEOfinder</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="pagination.js"></script>
     <style>
         body {
             color: black;
@@ -14,6 +15,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            padding-bottom: 60px;
         }
         main{
             flex:1;
@@ -28,20 +30,12 @@
         .table tbody tr:nth-child(odd) {
             background-color: #eeeeee;
         }
-        footer {
+        .footer {
             margin:0;
             background-color: rgba(1,32,46,255);
             text-align: center;
             width: 100%;
-        }
-        footer {
-            margin: 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: rgba(1,32,46,255);
-            color: white;
-            text-align: center;
+            display: block;
         }
         @media(prefers-color-scheme: dark) {
             body {
@@ -89,7 +83,7 @@
                 <input type="checkbox" id="e" name="e" value="501-1000" checked>
                 <label for="e">501-1000</label><br>
                 <input type="checkbox" id="f" name="f" value="1000+" checked>
-                <label for="f">1000+</label>
+                <label for="f">1000+</label><br>    
             </div>
             <div class="column is-2"><strong>Experiment Type:</strong><br>
                 <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
@@ -113,62 +107,61 @@
         </div>
 
         <script>
-        $(document).ready(function() {
+            $(document).ready(function() {
 
-            $('#inputText').keyup(function() {
-                var inputText = $(this).val();
-                if (inputText.length > 0) {
-                    $('#submitButton').prop('disabled', false);
-                    $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
-                } else {
-                    $('#submitButton').prop('disabled', true);
-                }
-            });
-
-            $('#submitButton').click(function() {
-                var inputText = $('#inputText').val();
-                var checkboxValues = {};
-                
-                $('input[type=checkbox]').each(function() {
-                    checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
-                });
-
-                $(this).prop('disabled', true); // Disable the button
-                $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/query',
-                    data: {
-                        ids: inputText,
-                        a: checkboxValues['a'],
-                        b: checkboxValues['b'],
-                        c: checkboxValues['c'],
-                        d: checkboxValues['d'],
-                        e: checkboxValues['e'],
-                        f: checkboxValues['f'],
-                        rnaSeq: checkboxValues['rnaSeq'],
-                        microarr: checkboxValues['microarr'],
-                        startYear: document.getElementById('startYear').value,
-                        endYear: document.getElementById('endYear').value
-                    },
-                    success: function(response) {
-                        // Handle success response
-                        console.log(response);
-                        $('#content').html(response);
-                    },
-                    error: function(xhr, status, error) {
-                        // Handle error
-                        console.error(xhr.responseText);
+                $('#inputText').keyup(function() {
+                    var inputText = $(this).val();
+                    if (inputText.length > 0) {
+                        $('#submitButton').prop('disabled', false);
+                        $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
+                    } else {
+                        $('#submitButton').prop('disabled', true);
                     }
                 });
+
+                $('#submitButton').click(function() {
+                    var inputText = $('#inputText').val();
+                    var checkboxValues = {};
+                    
+                    $('input[type=checkbox]').each(function() {
+                        checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
+                    });
+
+                    $(this).prop('disabled', true); // Disable the button
+                    $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/query',
+                        data: {
+                            ids: inputText,
+                            a: checkboxValues['a'],
+                            b: checkboxValues['b'],
+                            c: checkboxValues['c'],
+                            d: checkboxValues['d'],
+                            e: checkboxValues['e'],
+                            f: checkboxValues['f'],
+                            rnaSeq: checkboxValues['rnaSeq'],
+                            microarr: checkboxValues['microarr'],
+                            startYear: document.getElementById('startYear').value,
+                            endYear: document.getElementById('endYear').value
+                        },
+                        success: function(response) {
+                            // Handle success response
+                            console.log(response);
+                            $('.content').html(response);
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error
+                            console.error(xhr.responseText);
+                        }
+                    });
+                });
             });
-        });
         </script>
-
-        <div id="content"></div>
-
-        <!-- <footer>
+    </div>
+    <footer class="footer">
+        <div class="content has-text-centered">
             <div class="columns is-gapless has-text-centered is-size-6 pt-4 pb-4">
                 <div class="column">
                     <a href="about.html">About</a>
@@ -183,9 +176,8 @@
                     <a href="https://lifesciences.byu.edu/directory/stephen-piccolo">Contact Us</a>
                 </div>
             </div>
-        </footer>
-    -->
-    </div>
+        </div>
+    </footer>
 </body>
 </html>
  

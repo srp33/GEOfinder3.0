@@ -28,8 +28,9 @@ class WebApp:
     @cherrypy.expose
     def index(self):
         global data_frame
-        
+        print("in index")
         try:
+            print("in try block")
             return self.top_half_html()
         except:
             with open("error.txt", "w", encoding="utf-8") as error_file:
@@ -40,7 +41,6 @@ class WebApp:
     @cherrypy.expose
     def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
         metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr], [startYear, endYear])
-        print("metadata_dct", metadata_dct)
         try:
             return self.bottom_half_html(ids, metadata_dct)
         except:
@@ -70,41 +70,40 @@ class WebApp:
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""
-        <div class="columns is-centered" id="results">
-            <caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</caption>
-            <table class="table is-size-medium" id="myTable" border="1">
-                <thead>
-                    <tr>
-                        <th>GSE ID</th>
-                        <th>Summary</th>
-                        <th>Species</th>
-                        <th># Samples</th>
-                        <th>Experiment Type</th>
-                        <th>Year Released</th>
-                        <th>Super Series</th>
-                        <th>Sub Series</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {self.validate_input(ids, metadata_dct)}
-                </tbody>
-            </table>
+                    <h1 class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</h1>
+                    <div class="columns is-centered" id="results">
+                        <table class="table is-size-medium" id="myTable" border="1">
+                            <thead>
+                                <tr>
+                                    <th>GSE ID</th>
+                                    <th>Summary</th>
+                                    <th>Species</th>
+                                    <th># Samples</th>
+                                    <th>Experiment Type</th>
+                                    <th>Year Released</th>
+                                    <th>Super Series</th>
+                                    <th>Sub Series</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {self.validate_input(ids, metadata_dct)}
+                            </tbody>
+                        </table>
 
-            <nav class="pagination" role="navigation" aria-label="pagination">
-                <button class="pagination-previous" id="prev-btn">Previous</button>
-                <button class="pagination-next" id="next-btn">Next</button>
-            </nav>
-        </div>
+                        <nav class="pagination" role="navigation" aria-label="pagination">
+                            <button class="pagination-previous" id="prev-btn">Previous</button>
+                            <button class="pagination-next" id="next-btn">Next</button>
+                        </nav>
+                    </div>
 
-        <script> // When results generated, reenable submit button and scroll down to results
-            $('#submitButton').prop('disabled', false);
-            //Ensure you reference the results div correctly
-            document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
-        </script>
-        <script src="pagination.js"></script>
-        </body>
-        </html>
-        """
+                    <script> // When results generated, reenable submit button and scroll down to results
+                        $('#submitButton').prop('disabled', false);
+                        //Ensure you reference the results div correctly
+                        document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
+                    </script>
+                </body>
+            </html>
+            """
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
     def validate_input(self, ids, metadata_dct):
