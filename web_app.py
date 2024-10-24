@@ -217,12 +217,11 @@ TO-DO, in order
 
 questions:
 - footer all the way at the bottom
-- won't let us uncheck "1000+" box 
 - where we left off monday: need to check line 1 of pagination.js
 
 '''
 '''
-#checks that we're merging the allGEo and gte-large ids correctly
+#checks that we're merging the allGEO and gte-large ids correctly
 missing_ids = gte_ids_set - all_geo_ids_set
 
 overlapping_ids_list = list(overlap_ids)

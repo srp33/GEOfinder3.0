@@ -4,46 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOfinder</title>
+    <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="pagination.js"></script>
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
         body {
             color: black;
-            display: flex;
-            flex-direction: column;
-        }
-        .content {
-            flex: 1;
-            padding: 20px;
-        }
-        .footer {
-            background-color: rgb(146, 144, 144);
-            color:aqua;
-            text-align: center;
-            width: 100%;
-            padding: 10px 0;
-        }
-        .columns {
-            display: flex;
-            justify-content: center;
-        }
-        .column {
-            flex: 1;
-            padding: 0 10px;
-        }
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 60px;
-        }
-        main{
-            flex:1;
         }
         .table {
             width: 100%;
@@ -55,13 +21,12 @@
         .table tbody tr:nth-child(odd) {
             background-color: #eeeeee;
         }
-        
         @media(prefers-color-scheme: dark) {
             body {
                 color: white;
             }
             .table tbody tr:nth-child(even) {
-                background-color: #333333;
+            background-color: #333333;
             }
             .table tbody tr:nth-child(odd) {
                 background-color: #454545;
@@ -77,137 +42,111 @@
             margin-top: -60px;
             /*display: inline-block;  Or block if you want it on its own line */
         }
+    </style>
+    <style>
         #results {
-            overflow: auto;
-        }       
+            overflow: auto; /* Enable scrolling if content exceeds height */
+        }
     </style>
 </head>
+
 <body class="mx-6">
-    <div class="container">
-        <h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Enter GEO Accession IDs:</h1>
+    <h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif"><u>Enter GEO Accession IDs:</u></h1>
 
-        <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
+    <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
 
-        <h1 class="mt-3 subtitle is-4 is-family-sans-serif">Filters:</h1>
-        <div class="columns">
-            <div class="column is-2"><strong># Samples:</strong><br>
-                <input type="checkbox" id="a" name="a" value="1-10" checked>
-                <label for="a">1-10</label><br>
-                <input type="checkbox" id="b" name="b" value="11-50" checked>
-                <label for="b">11-50</label><br>
-                <input type="checkbox" id="c" name="c" value="51-100" checked>
-                <label for="c">51-100</label><br>
-                <input type="checkbox" id="d" name="d" value="101-500" checked>
-                <label for="d">101-500</label><br>
-                <input type="checkbox" id="e" name="e" value="501-1000" checked>
-                <label for="e">501-1000</label><br>
-                <input type="checkbox" id="f" name="f" value="1000+" checked>
-                <label for="f">1000+</label><br>    
-            </div>
-            <div class="column is-2"><strong>Experiment Type:</strong><br>
-                <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
-                <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
-                <input type="checkbox" id="microarr" name="microarr" value="Microarray" checked>
-                <label for="microarr">Expression profiling by array</label>
-            </div> 
-            <div class="column is-2"><strong>Year Released:</strong><br>
-                <div class="filter">
-                    <div style="margin-top: 10px;">
-                        <label for="startYear">Custom range: </label> <br>
-                        <input type="number" id="startYear" placeholder="2001" min="2001" max="2024" value="2001">
-                        <input type="number" id="endYear" placeholder="2024" min="2001" max="2024" value="2024">
-                    </div>
+    <h1 class="mt-3 subtitle is-4 is-family-sans-serif"><u>Filters:</u></h1>
+    <div class="columns">
+        <div class="column is-2"><strong># Samples:</strong><br>
+            <input type="checkbox" id="a" name="a" value="1-10" checked>
+            <label for="a">1-10</label><br>
+            <input type="checkbox" id="b" name="b" value="11-50" checked>
+            <label for="b">11-50</label><br>
+            <input type="checkbox" id="c" name="c" value="51-100" checked>
+            <label for="c">51-100</label><br>
+            <input type="checkbox" id="d" name="d" value="101-500" checked>
+            <label for="d">101-500</label><br>
+            <input type="checkbox" id="e" name="e" value="501-1000" checked>
+            <label for="e">501-1000</label><br>
+            <input type="checkbox" id="f" name="f" value="1000+" checked>
+            <label for="f">1000+</label><br>
+        </div>
+        <div class="column is-2"><strong>Experiment Type:</strong><br>
+            <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
+            <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
+            <input type="checkbox" id="microarr" name="microarr" value="Microarray" checked>
+            <label for="microarr">Expression profiling by array</label>
+        </div> 
+        <div class="column is-2"><strong>Year Released:</strong><br>
+            <div class="filter">
+                <div style="margin-top: 10px;">
+                    <label for="startYear">Custom range: </label> <br>
+                    <input type="number" id="startYear" placeholder="2001" min="2001" max="2024" value="2001">
+                    <input type="number" id="endYear" placeholder="2024" min="2001" max="2024" value="2024">
                 </div>
             </div>
         </div>
-
-        <div class="submit-container">
-            <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
-        </div>
-
-        <script>
-            $(document).ready(function() {
-
-                $('#inputText').keyup(function() {
-                    var inputText = $(this).val();
-                    if (inputText.length > 0) {
-                        $('#submitButton').prop('disabled', false);
-                        $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
-                    } else {
-                        $('#submitButton').prop('disabled', true);
-                    }
-                });
-
-                $('#submitButton').click(function() {
-                    var inputText = $('#inputText').val();
-                    var checkboxValues = {};
-                    
-                    $('input[type=checkbox]').each(function() {
-                        checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
-                    });
-
-                    $(this).prop('disabled', true); // Disable the button
-                    $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '/query',
-                        data: {
-                            ids: inputText,
-                            a: checkboxValues['a'],
-                            b: checkboxValues['b'],
-                            c: checkboxValues['c'],
-                            d: checkboxValues['d'],
-                            e: checkboxValues['e'],
-                            f: checkboxValues['f'],
-                            rnaSeq: checkboxValues['rnaSeq'],
-                            microarr: checkboxValues['microarr'],
-                            startYear: document.getElementById('startYear').value,
-                            endYear: document.getElementById('endYear').value
-                        },
-                        success: function(response) {
-                            // Handle success response
-                            console.log(response);
-                            $('.content').html(response);
-                        },
-                        error: function(xhr, status, error) {
-                            // Handle error
-                            console.error(xhr.responseText);
-                        }
-                    });
-                });
-            });
-        </script>
     </div>
-    <footer class="footer">
-        <div class="content has-text-centered">
-            <div class="columns is-gapless has-text-centered is-size-6 pt-4 pb-4">
-                <div class="column">
-                    <a href="about.html">About</a>
-                </div>
-                <div class="column">
-                    <a href="https://privacy.byu.edu">Privacy Notice</a>
-                </div>
-                <div class="column">
-                    <a href="https://infosec.byu.edu/cookie-prefs">Cookie Preferences</a>
-                </div>
-                <div class="column">
-                    <a href="https://lifesciences.byu.edu/directory/stephen-piccolo">Contact Us</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+
+    <div class="submit-container">
+        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+
+        $('#inputText').keyup(function() {
+            var inputText = $(this).val();
+            if (inputText.length > 0) {
+                $('#submitButton').prop('disabled', false);
+                $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
+            } else {
+                $('#submitButton').prop('disabled', true);
+            }
+        });
+
+        $('#submitButton').click(function() {
+            var inputText = $('#inputText').val();
+            var checkboxValues = {};
+            
+            $('input[type=checkbox]').each(function() {
+                checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
+            });
+
+            $(this).prop('disabled', true); // Disable the button
+            $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
+
+            $.ajax({
+                type: 'POST',
+                url: '/query',
+                data: {
+                    ids: inputText,
+                    a: checkboxValues['a'],
+                    b: checkboxValues['b'],
+                    c: checkboxValues['c'],
+                    d: checkboxValues['d'],
+                    e: checkboxValues['e'],
+                    f: checkboxValues['f'],
+                    rnaSeq: checkboxValues['rnaSeq'],
+                    microarr: checkboxValues['microarr'],
+                    startYear: document.getElementById('startYear').value,
+                    endYear: document.getElementById('endYear').value
+                },
+                success: function(response) {
+                    // Handle success response
+                    console.log(response);
+                    $('#content').html(response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+    </script>
+
+    <div id="content"></div>
+
 </body>
 </html>
- 
-
-<!-- bulma's footer documentation, didn't work great with our setup.
-    <footer class="footer">
-            <div class="content has-text-centered">
-              <p>
-                <a href="https://privacy.byu.edu">Privacy Notice</a>
-                <a href="https://infosec.byu.edu/cookie-prefs">Cookie Preferences</a>
-                <a href="https://lifesciences.byu.edu/directory/stephen-piccolo">Contact Us</a>
-              </p>
-            </div>
-        </footer>  -->
