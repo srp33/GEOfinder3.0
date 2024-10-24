@@ -8,8 +8,33 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="pagination.js"></script>
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
             color: black;
+            display: flex;
+            flex-direction: column;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        .footer {
+            background-color: rgb(146, 144, 144);
+            color:aqua;
+            text-align: center;
+            width: 100%;
+            padding: 10px 0;
+        }
+        .columns {
+            display: flex;
+            justify-content: center;
+        }
+        .column {
+            flex: 1;
+            padding: 0 10px;
         }
         .container {
             flex: 1;
@@ -30,13 +55,7 @@
         .table tbody tr:nth-child(odd) {
             background-color: #eeeeee;
         }
-        .footer {
-            margin:0;
-            background-color: rgba(1,32,46,255);
-            text-align: center;
-            width: 100%;
-            display: block;
-        }
+        
         @media(prefers-color-scheme: dark) {
             body {
                 color: white;
