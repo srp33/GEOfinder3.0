@@ -69,6 +69,8 @@ class WebApp:
     
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
+        print("in bottom_half_html")
+        print(self.validate_input(ids, metadata_dct))
         return f"""
                     <h1 class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</h1>
                     <div class="columns is-centered" id="results">
@@ -128,12 +130,12 @@ class WebApp:
 
         #make sure some boxes are checked
         if metadata_dct["Num_Samples"] == []:
-            print("error detected")   
+            print("num_samples error detected")   
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.num_samples_error_msg() 
         
         if metadata_dct["Experiment_Type"] == []:
-            print("error detected")
+            print("experiment_type error detected")
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.experiment_error_msg() 
 
@@ -165,21 +167,22 @@ class WebApp:
 
         #renders error message on screen if user has input an invalid ID or an invalid year
         if bad_format_ids or not_found_ids: 
-            print("error detected")   
+            print("id error detected")   
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) 
         if bad_format_years or not_found_years:
-            print("error detected")
+            print("year error detected")
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
 
         #if all entered ID's and years were valid, calls generate_rows to get results
         else:
+            print("calling generate rows...")
             return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
 
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):
-
+        print("in generate_rows")
         filtered_df = helper.filter_by_metas(metadata_dct)
         filtered_ids = filtered_df["GSE"].to_list()
 
@@ -189,6 +192,7 @@ class WebApp:
         
         #creates a list of ID's, where the filtered ID's and query ID's overlap
         match_ids = [value for value in results_ids if value in filtered_ids]
+        print("Match_IDs: ", match_ids)
 
         rows = ''
 
@@ -202,6 +206,7 @@ class WebApp:
                 <td>{line["Year_Released"].values[0]}</td> \
                 <td>{line["SuperSeries_GSE"].values[0]}</td> \
                 <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
+        print(rows[1:500])
         return rows
 
 if __name__ == '__main__':

@@ -9,3 +9,4 @@ collectionFiles
 filtered_AllGEO.tsv
 filtered_AllGEO_ids.tsv
 gte_ids.tsv
+**/__pycache__/*.pyc
