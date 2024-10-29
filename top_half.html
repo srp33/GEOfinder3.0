@@ -4,30 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GEOfinder</title>
-    <link rel="icon" href="geo_icon.ico" />
+    <link rel="icon" href="favicon.ico" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
         body {
             color: black;
-            font-family: sans-serif;
-            padding: 0;
-            margin: 0;
-        }
-        header {
-            padding: 7px;
-            text-align: left;
-            background: #b2e8ff;
-            margin: 0;
-            width: 100%;
-        }
-        h1 {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        h2 { 
-            font-size: 30px;
-            padding: 10px;
         }
         .table {
             width: 100%;
@@ -39,13 +21,8 @@
         .table tbody tr:nth-child(odd) {
             background-color: #eeeeee;
         }
-        
         @media(prefers-color-scheme: dark) {
             body {
-                color: white;
-            }
-            header{
-                background-color: #3e748c;
                 color: white;
             }
             .table tbody tr:nth-child(even) {
@@ -65,6 +42,8 @@
             margin-top: -60px;
             /*display: inline-block;  Or block if you want it on its own line */
         }
+    </style>
+    <style>
         #results {
             overflow: auto; /* Enable scrolling if content exceeds height */
         }
@@ -72,54 +51,46 @@
 </head>
 
 <body class="mx-6">
-    
-    <header> 
-        <h1>GEOfinder</h1>
-    </header>
-    
-    <main>
-        <h2 class = "has-text-centered">Enter GEO Accession IDs:</h2>
-        <!--  class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif" -->
-        <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
-        <!-- Filter checkboxes -->
-        <h2>Filters:</h2>
-        <!-- class="mt-3 subtitle is-4 is-family-sans-serif" -->
-        <div class="columns">
-            <div class="column is-2"><strong># Samples:</strong><br>
-                <input type="checkbox" id="a" name="a" value="1-10" checked>
-                <label for="a">1-10</label><br>
-                <input type="checkbox" id="b" name="b" value="11-50" checked>
-                <label for="b">11-50</label><br>
-                <input type="checkbox" id="c" name="c" value="51-100" checked>
-                <label for="c">51-100</label><br>
-                <input type="checkbox" id="d" name="d" value="101-500" checked>
-                <label for="d">101-500</label><br>
-                <input type="checkbox" id="e" name="e" value="501-1000" checked>
-                <label for="e">501-1000</label><br>
-                <input type="checkbox" id="f" name="f" value="1000+" checked>
-                <label for="f">1000+</label><br>
-            </div>
-            <div class="column is-2"><strong>Experiment Type:</strong><br>
-                <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
-                <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
-                <input type="checkbox" id="microarr" name="microarr" value="Microarray" checked>
-                <label for="microarr">Expression profiling by array</label>
-            </div> 
-            <div class="column is-2"><strong>Year Released:</strong><br>
-                <div class="filter">
-                    <div style="margin-top: 10px;">
-                        <label for="startYear">Custom range: </label> <br>
-                        <input type="number" id="startYear" placeholder="2001" min="2001" max="2024" value="2001">
-                        <input type="number" id="endYear" placeholder="2024" min="2001" max="2024" value="2024">
-                    </div>
+    <h1 class="mt-3 subtitle is-3 has-text-centered is-family-sans-serif"><u>Enter GEO Accession IDs:</u></h1>
+
+    <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
+
+    <h1 class="mt-3 subtitle is-4 is-family-sans-serif"><u>Filters:</u></h1>
+    <div class="columns">
+        <div class="column is-2"><strong># Samples:</strong><br>
+            <input type="checkbox" id="a" name="a" value="1-10" checked>
+            <label for="a">1-10</label><br>
+            <input type="checkbox" id="b" name="b" value="11-50" checked>
+            <label for="b">11-50</label><br>
+            <input type="checkbox" id="c" name="c" value="51-100" checked>
+            <label for="c">51-100</label><br>
+            <input type="checkbox" id="d" name="d" value="101-500" checked>
+            <label for="d">101-500</label><br>
+            <input type="checkbox" id="e" name="e" value="501-1000" checked>
+            <label for="e">501-1000</label><br>
+            <input type="checkbox" id="f" name="f" value="1000+" checked>
+            <label for="f">1000+</label><br>
+        </div>
+        <div class="column is-2"><strong>Experiment Type:</strong><br>
+            <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
+            <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
+            <input type="checkbox" id="microarr" name="microarr" value="Microarray" checked>
+            <label for="microarr">Expression profiling by array</label>
+        </div> 
+        <div class="column is-2"><strong>Year Released:</strong><br>
+            <div class="filter">
+                <div style="margin-top: 10px;">
+                    <label for="startYear">Custom range: </label> <br>
+                    <input type="number" id="startYear" placeholder="2001" min="2001" max="2024" value="2001">
+                    <input type="number" id="endYear" placeholder="2024" min="2001" max="2024" value="2024">
                 </div>
             </div>
         </div>
-        <!-- Submit Button -->
-        <div class="submit-container">
-            <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
-        </div>
-    </main>
+    </div>
+
+    <div class="submit-container">
+        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
+    </div>
 
     <script>
     $(document).ready(function() {
@@ -174,16 +145,8 @@
         });
     });
     </script>
+
+    <div id="content"></div>
+
 </body>
 </html>
-
-<!-- 
-    color scheme: 
-    light blue submit #66d1ff
-    darker blue #3e748c
-    light grey #bbbbbd
-    dark grey #353f46
-    navy blue #233741
-
-
--->
