@@ -29,10 +29,10 @@
             table-layout: auto;
         }
         .table tbody tr:nth-child(even) {
-            background-color: #cccccc;
+            background-color: #dddddd;
         }
         .table tbody tr:nth-child(odd) {
-            background-color: #eeeeee;
+            background-color: #efefef;
         }
         .footer .content p {
             display: flex;
@@ -45,7 +45,7 @@
             cursor: pointer;
         }
         tr:hover td{
-            background-color: white;
+            background-color: rgb(234, 254, 255);
         }
         @media(prefers-color-scheme: dark) {
             body {
@@ -69,6 +69,13 @@
             justify-content: flex-end;
             margin-right: 25px; 
             margin-top: -60px;
+        }
+        .pagination {
+            margin-top: 25px;
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         #results {
             overflow: auto;

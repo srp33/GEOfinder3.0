@@ -88,13 +88,14 @@ class WebApp:
                             <tbody>
                                 {self.validate_input(ids, metadata_dct)}
                             </tbody>
-                        </table>
-
-                        <nav class="pagination" role="navigation" aria-label="pagination">
-                            <button class="pagination-previous" id="prev-btn">Previous</button>
-                            <button class="pagination-next" id="next-btn">Next</button>
-                        </nav>
+                        </table>        
                     </div>
+
+                    <nav class="pagination" role="navigation" aria-label="pagination">    
+                        <button class="pagination-previous" id="prev-btn">Previous</button>
+                        <span>Showing 1 to 50 of 1000 results</span>
+                        <button class="pagination-next" id="next-btn">Next</button>
+                    </nav>
 
                     <script> // When results generated, reenable submit button and scroll down to results
                         $('#submitButton').prop('disabled', false);
