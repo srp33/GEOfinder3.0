@@ -70,9 +70,9 @@ class WebApp:
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""
-                    <h1 class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">Relevant Studies:</h1>
+                    <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2>
                     <div class="columns is-centered" id="results">
-                        <table class="table is-size-medium" id="myTable" border="1">
+                        <table class="table is-size-medium mx-6" id="myTable" border="1">
                             <thead>
                                 <tr>
                                     <th>GSE ID</th>
