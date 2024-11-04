@@ -90,16 +90,16 @@ class WebApp:
                             </tbody>
                         </table>        
                     </div>
-
-                    <nav class="pagination" role="navigation" aria-label="pagination">    
-                        <button class="pagination-previous" id="prev-btn">Previous</button>
-                        <span>Showing 1 to 50 of 1000 results</span>
-                        <button class="pagination-next" id="next-btn">Next</button>
+                    <nav class="pagination" role="navigation" aria-label="pagination">   
+                        <span>Showing 1 to 50 of 1000 results</span> 
+                        <div class = "index_buttons">
+                            <button class="pagination-previous" id="prev-btn">Previous</button>
+                            <button class="pagination-next" id="next-btn">Next</button>
+                        </div>
                     </nav>
-
-                    <script> // When results generated, reenable submit button and scroll down to results
+                    <script src="pagination.js"></script> 
+                    <script>
                         $('#submitButton').prop('disabled', false);
-                        //Ensure you reference the results div correctly
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
                     </script>
                 </body>
