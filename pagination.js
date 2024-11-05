@@ -1,14 +1,13 @@
-
-
 var array_length = 1000;
-var table_size = 50;
+var table_size = 10;
 var start_index = 1;
-var end_index = 50;
+var end_index = 0;
 var current_index = 1;
 var max_index = 0;
 
 function preLoadCalculations(){
-    array = rankList;
+    array = json.parse({table_info});
+    console.log(array)
     array_length = array.length;
     max_index = parseInt(array_length / table_size);
 

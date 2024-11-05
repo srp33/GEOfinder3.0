@@ -6,6 +6,7 @@ import error_msg
 import helper
 import csv
 import pandas as pd
+import json
 
 #make global data frame
 global data_frame
@@ -182,6 +183,8 @@ class WebApp:
     def generate_rows(valid_ids=[], metadata_dct={}):
 
         filtered_df = helper.filter_by_metas(metadata_dct)
+        #print("filtered df length: ", len(filtered_df))
+        #print("filtered df: ", filtered_df.head())
         filtered_ids = filtered_df["GSE"].to_list()
 
         #queries the collection to get most similar results based on user's valid ID's
@@ -190,10 +193,28 @@ class WebApp:
         
         #creates a list of ID's, where the filtered ID's and query ID's overlap
         match_ids = [value for value in results_ids if value in filtered_ids]
+        #print("match ids length:", len(match_ids))
 
-        rows = ''
+        results_df = filtered_df[filtered_df["GSE"].isin(match_ids)]
+        results_df = results_df.reset_index(drop=True)
+        #print("results df length: ", len(results_df))
+        #print("results df: ", results_df.head())
+        table_info = results_df.to_dict(orient='records')
+        #print(table_info)
+        json.dumps(table_info)
+
+        # for id in match_ids:
+        #     line = filtered_df[filtered_df["GSE"] == id]
+        #     rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
+        #         <td>{line["Summary"].values[0]}</td> \
+        #         <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
+        #         <td>{line["Experiment_Type"].values[0]}</td> \
+        #         <td>{line["Year_Released"].values[0]}</td> \
+        #         <td>{line["SuperSeries_GSE"].values[0]}</td> \
+        #         <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
 
         #prints data to table for each match ID
+        rows = ''
         for id in match_ids:
             line = filtered_df[filtered_df["GSE"] == id]
             rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
