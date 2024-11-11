@@ -1,5 +1,6 @@
 # Final Copy
 import cherrypy
+import os
 import re 
 import traceback 
 import error_msg
@@ -98,7 +99,7 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
-                    <script src="pagination.js"></script> 
+                    <script src="/static/pagination.js"></script> 
                     <script>
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
@@ -226,8 +227,16 @@ class WebApp:
                 <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
         return rows
 
+# Create the app and mount it, including static serving
+cherrypy.tree.mount(WebApp(), '/', {
+    '/static': {
+        'tools.staticdir.on': True,
+        'tools.staticdir.dir': "/Users/amand/OneDrive/Desktop/Piccolo Lab/GEOfinder3.0/static"
+    }
+})
+
 if __name__ == '__main__':
-    cherrypy.quickstart(WebApp(), '/')
+    cherrypy.quickstart(WebApp())
 
 
 '''
@@ -240,6 +249,12 @@ TO-DO, in order
 questions:
 - footer all the way at the bottom
 - where we left off monday: need to check line 1 of pagination.js
+
+11/7
+- pagination.js gives a 404 error, file not found. We can add it to a /static folder and configure cherrypy to serve static files
+- We will also have to change how we refer to it in the html
+- There are also event listeners and console logs to help with debugging
+- clicked go live and the  aout page came back but the results don't load
 
 '''
 '''
