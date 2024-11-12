@@ -54,7 +54,7 @@ def generate_id_query_results(input_ids):
 #returns a list of all GSE ID's in the filtered_AllGEO.tsv file 
 def generate_database_ids():
     database_ids = []
-    with open("filtered_AllGEO.tsv", "r", encoding="utf-8") as filtered_file:
+    with open("./tsvFiles/filtered_AllGEO.tsv", "r", encoding="utf-8") as filtered_file:
         line1 = filtered_file.readline()
         for line in filtered_file:
             items = line.split("\t")

@@ -12,14 +12,14 @@ import json
 #make global data frame
 global data_frame
 data_frame = pd.DataFrame()
-with open("filtered_AllGEO.tsv", "r", encoding="utf-8") as meta_file:
+with open("./tsvFiles/filtered_AllGEO.tsv", "r", encoding="utf-8") as meta_file:
     data_frame = pd.read_csv(meta_file, sep="\t") 
 
 #global database_ids
 global database_ids
-with open("filtered_AllGEO_ids.tsv", "r", encoding="utf-8") as id_file:
+with open("./tsvFiles/filtered_AllGEO_ids.tsv", "r", encoding="utf-8") as id_file:
     all_geo_ids = pd.read_csv(id_file, sep="\t") 
-with open("gte_ids.tsv", "r", encoding="utf-8") as id_file:
+with open("./tsvFiles/gte_ids.tsv", "r", encoding="utf-8") as id_file:
     gte_ids = pd.read_csv(id_file, sep="\t") 
 gte_ids_set = set(gte_ids['GSE'])
 all_geo_ids_set = set(all_geo_ids['GSE'])
@@ -41,11 +41,12 @@ class WebApp:
     
     @cherrypy.expose
     def about(self):
-        return "hello"
+        return self.read_text_file("about.html")
     
     @cherrypy.expose
     def pagination_js(self):
-        return self.read_text_file("...../pagination.js")
+        return "console.log('pagination test')"
+        #return self.read_text_file("pagination.js")
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose

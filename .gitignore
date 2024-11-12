@@ -3,9 +3,5 @@ chroma.sqlite3
 */*.bin
 *.tsv.gz
 error.txt
-AllGEO.tsv.gz
-gte-large.tsv.gz
 collectionFiles
-filtered_AllGEO.tsv
-filtered_AllGEO_ids.tsv
-gte_ids.tsv
+tsvFiles
