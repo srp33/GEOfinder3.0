@@ -38,6 +38,14 @@ class WebApp:
             with open("error.txt", "w", encoding="utf-8") as error_file:
                 traceback.print_exc(file=error_file)
             return error_msg.render_error()
+    
+    @cherrypy.expose
+    def about(self):
+        return "hello"
+    
+    @cherrypy.expose
+    def pagination_js(self):
+        return self.read_text_file("...../pagination.js")
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
@@ -51,6 +59,10 @@ class WebApp:
             return error_msg.render_error()
 
     #Internal:
+
+    def read_text_file(self, file_path):
+        with open(file_path) as the_file:
+            return the_file.read()
 
     #returns dictionary containing the user's filter selections
     def make_metadata_dct(self, num_samples, experiment_type, years):
@@ -99,7 +111,7 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
-                    <script src="/static/pagination.js"></script> 
+                    <script src="/pagination_js"></script> 
                     <script>
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
