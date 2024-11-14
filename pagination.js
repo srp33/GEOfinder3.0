@@ -90,9 +90,11 @@ $(document).ready(function() {
     // Attach event listeners to the buttons
     $('#prev-btn').click(function() {
         prev();  // Calls the prev() function when the "Previous" button is clicked
+        console.log("prev button listener worked");
     });
     
     $('#next-btn').click(function() {
         next();  // Calls the next() function when the "Next" button is clicked
+        console.log("next  button listener worked");
     });
 });

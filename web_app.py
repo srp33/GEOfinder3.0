@@ -45,8 +45,8 @@ class WebApp:
     
     @cherrypy.expose
     def pagination_js(self):
-        return "console.log('pagination test')"
-        #return self.read_text_file("pagination.js")
+        #return "console.log('pagination test')"
+        return self.read_text_file("pagination.js")
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
@@ -112,7 +112,7 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
-                    <script src="/pagination_js"></script> 
+                    <script src={self.pagination_js()}></script> 
                     <script>
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
