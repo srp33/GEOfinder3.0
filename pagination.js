@@ -69,7 +69,6 @@ function displayTableRows(){
 }
 
 function next(){
-    console.log("Next button clicked"); //debugging line
     if(currentIndex < max_index){
         current_index++;
         highlightIndexButton();
@@ -78,7 +77,6 @@ function next(){
 }
 
 function prev(){
-    console.log("Prev button clicked"); //debugging line
     if(current_index > 1){
         current_index--;
         highlightIndexButton();

@@ -112,8 +112,15 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
-                    <script src={self.pagination_js()}></script> 
+                    <script src={self.pagination_js()}></script>
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                     <script>
+                        $('#prev-btn').click(function() {{
+                            console.log("prev button listener worked");
+                        }});
+                        $('#next-btn').click(function() {{
+                            console.log("next  button listener worked");
+                        }});
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
                     </script>
@@ -255,28 +262,12 @@ if __name__ == '__main__':
 '''
 10/14-10/20
 TO-DO, in order
-- webapp name - GEOfinder, make logo
-- use bulma to have num_results>50 with multiple pages (consistent with the paper to use 1000)
+- logo
+- pagination
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
+- idea: copy/paste contents from pagination.js straight into the script tag of the webapp
 
-questions:
-- footer all the way at the bottom
-- where we left off monday: need to check line 1 of pagination.js
-
-11/7
-- pagination.js gives a 404 error, file not found. We can add it to a /static folder and configure cherrypy to serve static files
-- We will also have to change how we refer to it in the html
-- There are also event listeners and console logs to help with debugging
-- clicked go live and the  aout page came back but the results don't load
-
-'''
-'''
-#checks that we're merging the allGEO and gte-large ids correctly
-missing_ids = gte_ids_set - all_geo_ids_set
-
-overlapping_ids_list = list(overlap_ids)
-print("Number of overlapping GSE values:", len(overlapping_ids_list))
-missing_ids_list = list(missing_ids)
-print("Missing GSE values:", missing_ids_list)
-print("Number of missing GSE values:", len(missing_ids_list))
+#context of our project to give to chat when asking questions
+im making a web app and im using python, html, and css for the backend with javascript for the frontend. 
+im using cherrypy as the framework. right now im trying to use javascript to implement pagination on the results i display, but it isn't working.
 '''
