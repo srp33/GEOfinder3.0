@@ -1,4 +1,3 @@
-# Final Copy
 import cherrypy
 import os
 import re 
@@ -8,8 +7,6 @@ import helper
 import csv
 import pandas as pd
 import json
-# import mimetypes
-# mimetypes.types_map['.css'] = 'text/css'
 from  cherrypy.lib.static import serve_file
 
 #make global data frame
@@ -46,17 +43,6 @@ class WebApp:
     def about(self):
         return self.read_text_file("about.html")
     
-    # @cherrypy.expose
-    # def pagination_js(self):
-    #     return self.read_text_file("pagination.js")
-
-    # @cherrypy.expose
-    # def styles(self):
-    #     return self.read_text_file("styles.css")
-
-    # tools.staticfile.on = True
-    # tools.staticfile.filename = "/home/site/style.css"
-
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
     def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
@@ -114,13 +100,15 @@ class WebApp:
                             </tbody>
                         </table>        
                     </div>
+
+                    <!--
                     <nav class="pagination" role="navigation" aria-label="pagination">   
                         <span>Showing 1 to 50 of 1000 results</span> 
                         <div class = "index_buttons">
                             <button class="pagination-previous" id="prev-btn">Previous</button>
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
-                    </nav>
+                    </nav>-->
 
                     <script>
                         $('#submitButton').prop('disabled', false);
@@ -206,8 +194,6 @@ class WebApp:
     def generate_rows(valid_ids=[], metadata_dct={}):
 
         filtered_df = helper.filter_by_metas(metadata_dct)
-        #print("filtered df length: ", len(filtered_df))
-        #print("filtered df: ", filtered_df.head())
         filtered_ids = filtered_df["GSE"].to_list()
 
         #queries the collection to get most similar results based on user's valid ID's
@@ -216,27 +202,14 @@ class WebApp:
         
         #creates a list of ID's, where the filtered ID's and query ID's overlap
         match_ids = [value for value in results_ids if value in filtered_ids]
-        #print("match ids length:", len(match_ids))
 
         results_df = filtered_df[filtered_df["GSE"].isin(match_ids)]
         results_df = results_df.reset_index(drop=True)
-        #print("results df length: ", len(results_df))
-        #print("results df: ", results_df.head())
-        table_info = results_df.to_dict(orient='records')
-        #print(table_info)
-        json.dumps(table_info)
+        
+        # start of process to convert the dataframe to a javascript array 
+        # table_info = results_df.to_dict(orient='records')
+        # json.dumps(table_info)
 
-        # for id in match_ids:
-        #     line = filtered_df[filtered_df["GSE"] == id]
-        #     rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
-        #         <td>{line["Summary"].values[0]}</td> \
-        #         <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
-        #         <td>{line["Experiment_Type"].values[0]}</td> \
-        #         <td>{line["Year_Released"].values[0]}</td> \
-        #         <td>{line["SuperSeries_GSE"].values[0]}</td> \
-        #         <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
-
-        #prints data to table for each match ID
         rows = ''
         for id in match_ids:
             line = filtered_df[filtered_df["GSE"] == id]
@@ -249,36 +222,27 @@ class WebApp:
                 <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
         return rows
 
-# Create the app and mount it, including static serving
-cherrypy.tree.mount(WebApp(), '/', {
-    '/static': {
-        'tools.staticdir.on': True,
-        'tools.staticdir.dir': "/Users/amand/OneDrive/Desktop/Piccolo Lab/GEOfinder3.0/static"
-    }
-})
-
 if __name__ == '__main__':
-    # cherrypy.quickstart(WebApp(), "/", "app.conf")
     cherrypy.quickstart(WebApp(), "/", {
             '/styles.css':
             {
                 'tools.staticfile.on': True,
                 'tools.staticfile.filename': '/home/site/styles.css'
             },
-            '/pagination.js':
-            {
-                'tools.staticfile.on': True,
-                'tools.staticfile.filename': '/home/site/pagination.js'
-            }
+            # '/pagination.js':
+            # {
+            #     'tools.staticfile.on': True,
+            #     'tools.staticfile.filename': '/home/site/pagination.js'
+            # }
         })
 
 
 
 
 '''
-10/14-10/20
 TO-DO, in order
 - logo
+- reorganize html files, create one for head, one for footer, one for about, one for search home
 - pagination
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 - idea: copy/paste contents from pagination.js straight into the script tag of the webapp
