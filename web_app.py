@@ -8,6 +8,9 @@ import helper
 import csv
 import pandas as pd
 import json
+# import mimetypes
+# mimetypes.types_map['.css'] = 'text/css'
+from  cherrypy.lib.static import serve_file
 
 #make global data frame
 global data_frame
@@ -43,10 +46,16 @@ class WebApp:
     def about(self):
         return self.read_text_file("about.html")
     
-    @cherrypy.expose
-    def pagination_js(self):
-        #return "console.log('pagination test')"
-        return self.read_text_file("pagination.js")
+    # @cherrypy.expose
+    # def pagination_js(self):
+    #     return self.read_text_file("pagination.js")
+
+    # @cherrypy.expose
+    # def styles(self):
+    #     return self.read_text_file("styles.css")
+
+    # tools.staticfile.on = True
+    # tools.staticfile.filename = "/home/site/style.css"
 
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
@@ -112,15 +121,8 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
-                    <script src={self.pagination_js()}></script>
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
                     <script>
-                        $('#prev-btn').click(function() {{
-                            console.log("prev button listener worked");
-                        }});
-                        $('#next-btn').click(function() {{
-                            console.log("next  button listener worked");
-                        }});
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
                     </script>
@@ -256,7 +258,21 @@ cherrypy.tree.mount(WebApp(), '/', {
 })
 
 if __name__ == '__main__':
-    cherrypy.quickstart(WebApp())
+    # cherrypy.quickstart(WebApp(), "/", "app.conf")
+    cherrypy.quickstart(WebApp(), "/", {
+            '/styles.css':
+            {
+                'tools.staticfile.on': True,
+                'tools.staticfile.filename': '/home/site/styles.css'
+            },
+            '/pagination.js':
+            {
+                'tools.staticfile.on': True,
+                'tools.staticfile.filename': '/home/site/pagination.js'
+            }
+        })
+
+
 
 
 '''
