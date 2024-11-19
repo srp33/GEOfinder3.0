@@ -228,7 +228,12 @@ if __name__ == '__main__':
             {
                 'tools.staticfile.on': True,
                 'tools.staticfile.filename': '/home/site/styles.css'
-            },
+            }
+            # '/newgeo.ico':
+            # {
+            #     'tools.staticfile.on': True,
+            #     'tools.staticfile.filename': '/newgeo.ico'
+            # }
             # '/pagination.js':
             # {
             #     'tools.staticfile.on': True,
