@@ -101,14 +101,13 @@ class WebApp:
                         </table>        
                     </div>
 
-                    <!--
                     <nav class="pagination" role="navigation" aria-label="pagination">   
                         <span>Showing 1 to 50 of 1000 results</span> 
                         <div class = "index_buttons">
                             <button class="pagination-previous" id="prev-btn">Previous</button>
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
-                    </nav>-->
+                    </nav>
 
                     <script>
                         $('#submitButton').prop('disabled', false);
@@ -221,24 +220,30 @@ class WebApp:
                 <td>{line["SuperSeries_GSE"].values[0]}</td> \
                 <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
         return rows
+    
+
 
 if __name__ == '__main__':
+    style_path = os.path.abspath("styles.css")
+    icon_path = os.path.abspath("newgeo.ico")
+    pagination_path = os.path.abspath("pagination.js")
+
     cherrypy.quickstart(WebApp(), "/", {
             '/styles.css':
             {
                 'tools.staticfile.on': True,
-                'tools.staticfile.filename': '/home/site/styles.css'
+                'tools.staticfile.filename': style_path
+            },
+            '/newgeo.ico':
+            {
+                'tools.staticfile.on': True,
+                'tools.staticfile.filename': icon_path
+            },
+            '/pagination.js':
+            {
+                'tools.staticfile.on': True,
+                'tools.staticfile.filename': pagination_path
             }
-            # '/newgeo.ico':
-            # {
-            #     'tools.staticfile.on': True,
-            #     'tools.staticfile.filename': '/newgeo.ico'
-            # }
-            # '/pagination.js':
-            # {
-            #     'tools.staticfile.on': True,
-            #     'tools.staticfile.filename': '/home/site/pagination.js'
-            # }
         })
 
 
