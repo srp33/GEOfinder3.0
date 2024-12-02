@@ -100,7 +100,8 @@ class WebApp:
                             </tbody>
                         </table>        
                     </div>
-
+                    
+                    <!--
                     <nav class="pagination" role="navigation" aria-label="pagination">   
                         <span>Showing 1 to 50 of 1000 results</span> 
                         <div class = "index_buttons">
@@ -108,6 +109,7 @@ class WebApp:
                             <button class="pagination-next" id="next-btn">Next</button>
                         </div>
                     </nav>
+                    -->
 
                     <script>
                         $('#submitButton').prop('disabled', false);
@@ -225,7 +227,7 @@ class WebApp:
 
 if __name__ == '__main__':
     style_path = os.path.abspath("styles.css")
-    icon_path = os.path.abspath("newgeo.ico")
+    icon_path = os.path.abspath("geo_logo.ico")
     pagination_path = os.path.abspath("pagination.js")
 
     cherrypy.quickstart(WebApp(), "/", {
@@ -234,7 +236,7 @@ if __name__ == '__main__':
                 'tools.staticfile.on': True,
                 'tools.staticfile.filename': style_path
             },
-            '/newgeo.ico':
+            '/geo_logo.ico':
             {
                 'tools.staticfile.on': True,
                 'tools.staticfile.filename': icon_path
@@ -251,8 +253,11 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
-- logo
 - reorganize html files, create one for head, one for footer, one for about, one for search home
+- add button on about page to return to main page
+- favicon - find a less blurry one? 
+- change font in bulma?
+
 - pagination
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 - idea: copy/paste contents from pagination.js straight into the script tag of the webapp
