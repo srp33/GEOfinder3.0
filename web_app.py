@@ -253,13 +253,18 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
+- tweak white space (footer and logo)
 - reorganize html files, create one for head, one for footer, one for about, one for search home
 - add button on about page to return to main page
 - favicon - find a less blurry one? 
 - change font in bulma?
+- clear cache history to be able to see css file changes?
 
-- pagination
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
+- use regular expressions to find "Accession: GSE..." don't need to send the file to the server, just do it all on the client side with JavaScript
+- open, read contents, parse IDs, put them into the search box (let user click submit when ready)
+- error handling for if someone tries to upload a file that isn't the right format, etc
+- pagination
 - idea: copy/paste contents from pagination.js straight into the script tag of the webapp
 
 #context of our project to give to chat when asking questions
