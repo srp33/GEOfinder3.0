@@ -5,12 +5,12 @@ body {
 nav {
     padding: 20px;
     text-align: left;
+    margin-left: 3rem;
 }
 h1 {
     padding: 30px;
     font-size: 35px;
     font-weight: bold;
-    margin-left: 24px;
 }
 h2 {
     font-size: 30px;
@@ -24,6 +24,9 @@ h2 {
 }
 .table tbody tr:nth-child(odd) {
     background-color: #efefef;
+}
+.footer {
+    padding: 1.5rem;
 }
 .footer .content p {
     display: flex;
