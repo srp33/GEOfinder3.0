@@ -9,24 +9,48 @@
         <input type="file" id="fileInput" style="display: none;" />
         
         <!-- Button to trigger file input -->
-        <button id="uploadButton" class="button is-info is-medium" style="position: absolute; bottom: 0; left: 0; z-index: 1;">Upload File</button>
+        <button id="uploadButton" class="button is-info is-normal" style="position: absolute; bottom: 0; left: 0; z-index: 1;">Upload File</button>
+        
+        <div id="loadingSpinner" style="display: none; position: absolute; bottom: 0; left: 200px; z-index: 2;">
+            <div class="loader"></div> <!-- You can use any CSS spinner or icon here -->
+        </div>
+        
+        <!-- Box to display the file name (Initially hidden) -->
+        <div id="fileNameBox" style="display: none; position: absolute; bottom: 0; left: 300px; padding: 5px 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
+            <span id="fileNameText"></span>
+        </div>
     </div>
     <script>
         // Get references to the elements
         const uploadButton = document.getElementById('uploadButton');
         const fileInput = document.getElementById('fileInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const fileNameBox = document.getElementById('fileNameBox');
+        const fileNameText = document.getElementById('fileNameText');
         
         // Add an event listener to the button to trigger the file input when clicked
         uploadButton.addEventListener('click', function() {
             fileInput.click(); // Trigger the file input click event
         });
         
-        // Optional: You can handle the file once selected by the user
+        // Handle the file once selected
         fileInput.addEventListener('change', function(event) {
             const file = event.target.files[0];
+            
             if (file) {
-               console.log('File selected:', file.name);
-                // Here you can add further logic to handle the uploaded file, e.g., display it, upload it to a server, etc.
+                // Show the loading spinner while processing the file
+                loadingSpinner.style.display = 'block';
+                fileNameBox.style.display = 'none'; // Hide the file name box until file is processed
+                
+                // Simulate file reading/upload (e.g., using FileReader or other async operations)
+                setTimeout(function() {
+                    // Hide the loading spinner after "upload" or "processing"
+                    loadingSpinner.style.display = 'none';
+                    
+                    // Show the file name box with the uploaded file name
+                    fileNameBox.style.display = 'block';
+                    fileNameText.textContent = file.name; // Display the file name
+                }, 2000); // Simulate a 2-second upload or file reading process
             }
         });
     </script>
