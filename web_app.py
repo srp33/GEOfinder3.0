@@ -261,8 +261,6 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
-- turn header into a return home button 
-- clear cache history to be able to see css file changes?
 
 - option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
 - use regular expressions to find "Accession: GSE..." don't need to send the file to the server, just do it all on the client side with JavaScript
