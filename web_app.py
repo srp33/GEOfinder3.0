@@ -31,9 +31,11 @@ class WebApp:
     def index(self):
         global data_frame
         print("in index")
+
+        # renders the starting page
         try:
             print("in try block")
-            return self.top_half_html()
+            return self.head() + self.search_home() + self.footer()
         except:
             with open("error.txt", "w", encoding="utf-8") as error_file:
                 traceback.print_exc(file=error_file)
@@ -41,7 +43,19 @@ class WebApp:
     
     @cherrypy.expose
     def about(self):
-        return self.read_text_file("./htmlFiles/about.html")
+        return self.head() + self.read_text_file("./htmlFiles/about.html") + self.footer()
+    
+    @cherrypy.expose
+    def head(self):
+        return self.read_text_file("./htmlFiles/head.html")
+    
+    @cherrypy.expose
+    def search_home(self):
+        return self.read_text_file("./htmlFiles/search_home.html")
+    
+    @cherrypy.expose
+    def footer(self):
+        return self.read_text_file("./htmlFiles/footer.html")
     
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
@@ -71,12 +85,6 @@ class WebApp:
             metadata_dct["Years"] = [val for val in years if val]
         return metadata_dct
 
-    #renders the starting page
-    def top_half_html(self):
-        with open("./htmlFiles/top_half.html") as top_html:
-            html_str = top_html.read()
-            return html_str
-    
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""

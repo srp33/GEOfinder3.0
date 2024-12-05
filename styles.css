@@ -24,7 +24,10 @@ h2 {
     font-size: 30px;
 }
 h4 {
-    margin: 20px;
+    margin: 3rem;
+}
+.about-text {
+    margin: 3rem;
 }
 .table {
     width: 100%;
