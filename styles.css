@@ -23,6 +23,9 @@ h1 {
 h2 {
     font-size: 30px;
 }
+h4 {
+    margin: 20px;
+}
 .table {
     width: 100%;
     table-layout: auto;

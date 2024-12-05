@@ -41,7 +41,7 @@ class WebApp:
     
     @cherrypy.expose
     def about(self):
-        return self.read_text_file("about.html")
+        return self.read_text_file("./htmlFiles/about.html")
     
     # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
@@ -73,7 +73,7 @@ class WebApp:
 
     #renders the starting page
     def top_half_html(self):
-        with open("top_half.html") as top_html:
+        with open("./htmlFiles/top_half.html") as top_html:
             html_str = top_html.read()
             return html_str
     
