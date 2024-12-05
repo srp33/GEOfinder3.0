@@ -261,10 +261,6 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
-- reorganize html files, create one for head, one for footer, one for about, one for search home
-    i. e. create functions that read in each smaller html file, like top_half_html() function.
-    for example, instead of returning "return self.top_half_html()" we would say return self.header() + self.search_home() + self.footer()
-    and same thing goes for the about page
 - turn header into a return home button 
 - clear cache history to be able to see css file changes?
 
