@@ -2,59 +2,16 @@
     <h2 class = "has-text-centered">Enter GEO Accession IDs:</h2>
 
     <div class="search-container" style="position: relative;">
-        <!-- Textarea for user input -->
         <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info mt-2" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
-        
-        <!-- Hidden file input -->
         <input type="file" id="fileInput" style="display: none;" />
-        
-        <!-- Button to trigger file input -->
         <button id="uploadButton" class="button is-info is-normal" style="position: absolute; bottom: 0; left: 0; z-index: 1;">Upload File</button>
-        
         <div id="loadingSpinner" style="display: none; position: absolute; bottom: 0; left: 200px; z-index: 2;">
-            <div class="loader"></div> <!-- You can use any CSS spinner or icon here -->
+            <div class="loader"></div> 
         </div>
-        
-        <!-- Box to display the file name (Initially hidden) -->
         <div id="fileNameBox" style="display: none; position: absolute; bottom: 0; left: 300px; padding: 5px 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
             <span id="fileNameText"></span>
         </div>
     </div>
-    <script>
-        // Get references to the elements
-        const uploadButton = document.getElementById('uploadButton');
-        const fileInput = document.getElementById('fileInput');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const fileNameBox = document.getElementById('fileNameBox');
-        const fileNameText = document.getElementById('fileNameText');
-        
-        // Add an event listener to the button to trigger the file input when clicked
-        uploadButton.addEventListener('click', function() {
-            fileInput.click(); // Trigger the file input click event
-        });
-        
-        // Handle the file once selected
-        fileInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            
-            if (file) {
-                // Show the loading spinner while processing the file
-                loadingSpinner.style.display = 'block';
-                fileNameBox.style.display = 'none'; // Hide the file name box until file is processed
-                
-                // Simulate file reading/upload (e.g., using FileReader or other async operations)
-                setTimeout(function() {
-                    // Hide the loading spinner after "upload" or "processing"
-                    loadingSpinner.style.display = 'none';
-                    
-                    // Show the file name box with the uploaded file name
-                    fileNameBox.style.display = 'block';
-                    fileNameText.textContent = file.name; // Display the file name
-                }, 2000); // Simulate a 2-second upload or file reading process
-            }
-        });
-    </script>
-
     <h2>Filters:</h2>
     <div class="boxes">
         <div class="columns">
@@ -93,6 +50,7 @@
         <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
     </div>
 </main>
+
 <script>
 $(document).ready(function() {
     $('#inputText').keyup(function() {
@@ -102,6 +60,64 @@ $(document).ready(function() {
             $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
         } else {
             $('#submitButton').prop('disabled', true);
+        }
+    });
+
+    function checkTextareaContent(){
+        var inputText = $('#inputText').val();
+        if (inputText.length > 0) {
+            $('#submitButton').prop('disabled', false);
+            $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
+        } else {
+            $('#submitButton').prop('disabled', true);
+        }
+    }
+
+    const uploadButton = document.getElementById('uploadButton');
+    const fileInput = document.getElementById('fileInput');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const fileNameBox = document.getElementById('fileNameBox');
+    const fileNameText = document.getElementById('fileNameText');
+    const inputText = document.getElementById('inputText');
+
+    uploadButton.addEventListener('click', function() {
+        fileInput.click(); 
+    });
+
+    fileInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        
+        if (file) {
+            loadingSpinner.style.display = 'block';
+            fileNameBox.style.display = 'none'; 
+            
+            setTimeout(function() {
+                loadingSpinner.style.display = 'none';
+                
+                fileNameBox.style.display = 'block';
+                fileNameText.textContent = file.name; 
+            }); 
+
+            const reader = new FileReader();
+            // after the file is read, this anonymous function 'e' is called 
+            reader.onload = function(e){
+                const textContent = e.target.result; //file's text content
+
+                const pattern = /Accession: (GSE\d+)/g; //regex pattern
+                const matches = [];
+                let match;
+                while((match=pattern.exec(textContent)) !== null) {
+                    matches.push(match[1]);
+                }
+
+                if (matches.length > 0){
+                    inputText.value = matches.join(', ');
+                }else{
+                    inputText.value='';
+                }
+                checkTextareaContent();
+            };
+            reader.readAsText(file);
         }
     });
 

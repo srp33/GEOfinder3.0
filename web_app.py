@@ -30,11 +30,8 @@ class WebApp:
     @cherrypy.expose
     def index(self):
         global data_frame
-        print("in index")
-
         # renders the starting page
         try:
-            print("in try block")
             return self.head() + self.search_home() + self.footer()
         except:
             with open("error.txt", "w", encoding="utf-8") as error_file:
@@ -262,10 +259,12 @@ if __name__ == '__main__':
 '''
 TO-DO, in order
 
-- option to upload a file of search results from GEO (after checking boxes on GEO/downloading result file) - upload that file and we parse it to get GSE ID's and search
-- use regular expressions to find "Accession: GSE..." don't need to send the file to the server, just do it all on the client side with JavaScript
-- open, read contents, parse IDs, put them into the search box (let user click submit when ready)
 - error handling for if someone tries to upload a file that isn't the right format, etc
+- small things to fix: when we upload the file "gds3" on abby's computer, error message gets displayed within a table - check when table heading is created
+-       for this ^ we just need to reorder how the html is being returned. add the theader content into the generate_rows function
+-       maybe in the generate_rows function, we return 2 strings: 1 is the table header, 1 is the table body content and we access them in self.bottom_half
+- should we have the loading spinner/results on a timer?
+
 - pagination
 - idea: copy/paste contents from pagination.js straight into the script tag of the webapp
 
