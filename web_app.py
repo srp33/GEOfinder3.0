@@ -260,6 +260,7 @@ if __name__ == '__main__':
 TO-DO, in order
 
 - error handling for if someone tries to upload a file that isn't the right format, etc
+-       if we don't find any GSE ID's in the file, that's an indication of incorrect file format "didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!
 - small things to fix: when we upload the file "gds3" on abby's computer, error message gets displayed within a table - check when table heading is created
 -       for this ^ we just need to reorder how the html is being returned. add the theader content into the generate_rows function
 -       maybe in the generate_rows function, we return 2 strings: 1 is the table header, 1 is the table body content and we access them in self.bottom_half
