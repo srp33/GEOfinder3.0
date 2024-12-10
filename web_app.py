@@ -258,6 +258,23 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
+From Dr. Piccolo 12/10/2024: 
+- Put “Enter GSE ID’s” small and on the left
+- Use the paperclip button instead of upload file button
+- Create help button with instructions of how to upload a file from GSO
+- Align the submit button flush with top of filters
+- Remove the shadow of the navbar
+
+- Put error message between box and filters, color red
+- Don’t search until the user clicks submit
+- Modify so that we populate the table with the valid IDs even if invalid IDs are present
+
+About page: 
+- Take out click on logo text
+- Expand about page to a few sentences,pattern after the paper
+- 1 paragraph of justifications for why we created it and 1 for how it works
+- Eventually link to Bioarchive
+
 
 - error handling for if someone tries to upload a file that isn't the right format, etc
 -       if we don't find any GSE ID's in the file, that's an indication of incorrect file format "didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!
