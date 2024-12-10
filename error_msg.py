@@ -18,11 +18,11 @@ def render_error():
 def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids):
     error_message = ""
     if bad_format_ids:
-        error_message += f"<tr><td>Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}</td></tr>"
+        error_message += f"<tr><td>Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br></td></tr>"
     if not_found_ids:
-        error_message +=f"<tr><td>The following IDs you entered were not found in our database: {', '.join(not_found_ids)}</td></tr>"
+        error_message +=f"<tr><td>The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br></td></tr>"
     if valid_ids:
-        error_message +=f"<tr><td>The following IDs you entered were valid: {', '.join(valid_ids)}</td></tr>"
+        error_message +=f"<tr><td>The following IDs you entered were valid: {', '.join(valid_ids)}<br></td></tr>"
     return error_message
 
 def invalid_year_msg(bad_format_years, not_found_years, valid_years):

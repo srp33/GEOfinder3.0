@@ -1,18 +1,17 @@
 <main class="my-4 mx-6">
-    <h2 class = "has-text-centered">Enter GEO Accession IDs:</h2>
+    <h2>Enter GEO Accession IDs:</h2>
 
     <div class="search-container" style="position: relative;">
         <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info mt-2" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
         <input type="file" id="fileInput" style="display: none;" />
-        <button id="uploadButton" class="button is-info is-normal" style="position: absolute; bottom: 0; left: 0; z-index: 1;">Upload File</button>
-        <div id="loadingSpinner" style="display: none; position: absolute; bottom: 0; left: 200px; z-index: 2;">
-            <div class="loader"></div> 
-        </div>
-        <div id="fileNameBox" style="display: none; position: absolute; bottom: 0; left: 300px; padding: 5px 10px; border: 1px solid #ccc; background-color: #f9f9f9;">
-            <span id="fileNameText"></span>
-        </div>
+        <span class="icon fas fa-2x" style="cursor: pointer; position: absolute; bottom: 0; left: 0; z-index: 1;">
+            <i class="fa-solid fa-paperclip"></i>
+        </span>        
     </div>
     <h2>Filters:</h2>
+    <div class="submit-container">
+        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
+    </div>
     <div class="boxes">
         <div class="columns">
             <div class="column is-2"><strong>Number of Samples:</strong><br>
@@ -46,9 +45,6 @@
             </div>
         </div>
     </div>
-    <div class="submit-container">
-        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
-    </div>
 </main>
 
 <script>
@@ -73,53 +69,43 @@ $(document).ready(function() {
         }
     }
 
-    const uploadButton = document.getElementById('uploadButton');
-    const fileInput = document.getElementById('fileInput');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const fileNameBox = document.getElementById('fileNameBox');
-    const fileNameText = document.getElementById('fileNameText');
-    const inputText = document.getElementById('inputText');
+const fileInput = document.getElementById('fileInput');
+const inputText = document.getElementById('inputText');
 
-    uploadButton.addEventListener('click', function() {
-        fileInput.click(); 
-    });
+// Get the paperclip icon element
+const uploadIcon = document.querySelector('.icon i'); // Using querySelector to select the icon
 
-    fileInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        
-        if (file) {
-            loadingSpinner.style.display = 'block';
-            fileNameBox.style.display = 'none'; 
-            
-            setTimeout(function() {
-                loadingSpinner.style.display = 'none';
-                
-                fileNameBox.style.display = 'block';
-                fileNameText.textContent = file.name; 
-            }); 
+// Trigger the file input when the paperclip icon is clicked
+uploadIcon.addEventListener('click', function() {
+    fileInput.click(); 
+});
 
-            const reader = new FileReader();
-            // after the file is read, this anonymous function 'e' is called 
-            reader.onload = function(e){
-                const textContent = e.target.result; //file's text content
+fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    
+    if (file) {
 
-                const pattern = /Accession: (GSE\d+)/g; //regex pattern
-                const matches = [];
-                let match;
-                while((match=pattern.exec(textContent)) !== null) {
-                    matches.push(match[1]);
-                }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const textContent = e.target.result; // file's text content
 
-                if (matches.length > 0){
-                    inputText.value = matches.join(', ');
-                }else{
-                    inputText.value='';
-                }
-                checkTextareaContent();
-            };
-            reader.readAsText(file);
-        }
-    });
+            const pattern = /Accession: (GSE\d+)/g; // regex pattern
+            const matches = [];
+            let match;
+            while((match = pattern.exec(textContent)) !== null) {
+                matches.push(match[1]);
+            }
+
+            if (matches.length > 0){
+                inputText.value = matches.join(', ');
+            } else {
+                inputText.value = '';
+            }
+            checkTextareaContent(); // Presumably this is some function you have defined
+        };
+        reader.readAsText(file);
+    }
+});
 
     $('#submitButton').click(function() {
         var inputText = $('#inputText').val();

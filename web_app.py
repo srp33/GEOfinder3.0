@@ -85,37 +85,10 @@ class WebApp:
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""
-                    <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2>
                     <div class="columns is-centered" id="results">
-                        <table class="table is-size-medium mx-6" id="myTable" border="1">
-                            <thead>
-                                <tr>
-                                    <th>GSE ID</th>
-                                    <th>Summary</th>
-                                    <th>Species</th>
-                                    <th># Samples</th>
-                                    <th>Experiment Type</th>
-                                    <th>Year Released</th>
-                                    <th>Super Series</th>
-                                    <th>Sub Series</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {self.validate_input(ids, metadata_dct)}
-                            </tbody>
-                        </table>        
+                        {self.validate_input(ids, metadata_dct)}      
                     </div>
                     
-                    <!--
-                    <nav class="pagination" role="navigation" aria-label="pagination">   
-                        <span>Showing 1 to 50 of 1000 results</span> 
-                        <div class = "index_buttons">
-                            <button class="pagination-previous" id="prev-btn">Previous</button>
-                            <button class="pagination-next" id="next-btn">Next</button>
-                        </div>
-                    </nav>
-                    -->
-
                     <script>
                         $('#submitButton').prop('disabled', false);
                         document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
@@ -147,12 +120,10 @@ class WebApp:
 
         #make sure some boxes are checked
         if metadata_dct["Num_Samples"] == []:
-            print("error detected")   
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.num_samples_error_msg() 
         
         if metadata_dct["Experiment_Type"] == []:
-            print("error detected")
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.experiment_error_msg() 
 
@@ -183,12 +154,10 @@ class WebApp:
                 bad_format_years.append(endYear)
 
         #renders error message on screen if user has input an invalid ID or an invalid year
-        if bad_format_ids or not_found_ids: 
-            print("error detected")   
+        if bad_format_ids or not_found_ids:  
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) 
         if bad_format_years or not_found_years:
-            print("error detected")
             return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
                 error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
 
@@ -216,20 +185,33 @@ class WebApp:
         # table_info = results_df.to_dict(orient='records')
         # json.dumps(table_info)
 
-        rows = ''
+        table = '''
+            <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2><br>
+            <table class="table is-size-medium mx-6" id="myTable" border="1">
+                <thead>
+                    <tr>
+                        <th>GSE ID</th>
+                        <th>Summary</th>
+                        <th>Species</th>
+                        <th># Samples</th>
+                        <th>Experiment Type</th>
+                        <th>Year Released</th>
+                        <th>Super Series</th>
+                        <th>Sub Series</th>
+                    </tr>
+                </thead><tbody>'''
         for id in match_ids:
             line = filtered_df[filtered_df["GSE"] == id]
-            rows += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
+            table += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
                 <td>{line["Summary"].values[0]}</td> \
                 <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
                 <td>{line["Experiment_Type"].values[0]}</td> \
                 <td>{line["Year_Released"].values[0]}</td> \
                 <td>{line["SuperSeries_GSE"].values[0]}</td> \
                 <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
-        return rows
+        table += '</tbody></table>'
+        return table
     
-
-
 if __name__ == '__main__':
     style_path = os.path.abspath("styles.css")
     icon_path = os.path.abspath("geo_logo.ico")
@@ -259,18 +241,11 @@ if __name__ == '__main__':
 '''
 TO-DO, in order
 From Dr. Piccolo 12/10/2024: 
-- Put “Enter GSE ID’s” small and on the left
-- Use the paperclip button instead of upload file button
-- Create help button with instructions of how to upload a file from GSO
-- Align the submit button flush with top of filters
-- Remove the shadow of the navbar
-
+- Create help button with instructions of how to upload a file from GSE
 - Put error message between box and filters, color red
-- Don’t search until the user clicks submit
 - Modify so that we populate the table with the valid IDs even if invalid IDs are present
 
 About page: 
-- Take out click on logo text
 - Expand about page to a few sentences,pattern after the paper
 - 1 paragraph of justifications for why we created it and 1 for how it works
 - Eventually link to Bioarchive
