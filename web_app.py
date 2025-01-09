@@ -186,8 +186,8 @@ class WebApp:
         # json.dumps(table_info)
 
         table = '''
-            <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2><br>
-            <table class="table is-size-medium mx-6" id="myTable" border="1">
+            <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2>
+            <table class="table is-size-medium mx-6 is-centered" id="myTable" border="1">
                 <thead>
                     <tr>
                         <th>GSE ID</th>
@@ -244,6 +244,7 @@ From Dr. Piccolo 12/10/2024:
 - Create help button with instructions of how to upload a file from GSE
 - Put error message between box and filters, color red
 - Modify so that we populate the table with the valid IDs even if invalid IDs are present
+- add in new gte_large file from Dr. Piccolo so that we have all the embeddings we need
 
 About page: 
 - Expand about page to a few sentences,pattern after the paper
