@@ -8,6 +8,7 @@
             <i class="fa-solid fa-paperclip"></i>
         </span>        
     </div>
+    <div id="errorPlaceholder"><p></p></div>
     <h2>Filters:</h2>
     <div class="submit-container">
         <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
@@ -71,6 +72,7 @@ $(document).ready(function() {
 
 const fileInput = document.getElementById('fileInput');
 const inputText = document.getElementById('inputText');
+const errorPlaceholder = document.getElementById('errorPlaceholder');
 
 // Get the paperclip icon element
 const uploadIcon = document.querySelector('.icon i'); // Using querySelector to select the icon
@@ -99,7 +101,7 @@ fileInput.addEventListener('change', function(event) {
             if (matches.length > 0){
                 inputText.value = matches.join(', ');
             } else {
-                inputText.value = '';
+                errorPlaceholder.innerHTML = "<span style='color: red;'>Didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!</span>";
             }
             checkTextareaContent(); // Presumably this is some function you have defined
         };

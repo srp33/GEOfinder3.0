@@ -252,35 +252,22 @@ if __name__ == '__main__':
             }
     })
 
-
-
-
 '''
 TO-DO, in order
-From Dr. Piccolo 12/10/2024: 
 - Create help button with instructions of how to upload a file from GSE
-- Put error message between box and filters, color red
-- Modify so that we populate the table with the valid IDs even if invalid IDs are present
-- add in new gte_large file from Dr. Piccolo so that we have all the embeddings we need
+- fix error message formatting
+- later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
+- error: after trying to upload a file and trying to type an ID in, it doesn't work.
+
+DONE 1/9:
+- added in new gte-large file
+- fixed so that results for valid ID's are displayed even when there are others with errors
+- added about page info (eventually we will link it to bioarchive)
+- added error handling for if a user uploads a file with no GSE ID's
 
 questions:
 - with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
-
-About page: 
-- Expand about page to a few sentences,pattern after the paper
-- 1 paragraph of justifications for why we created it and 1 for how it works
-- Eventually link to Bioarchive
-
-
-- error handling for if someone tries to upload a file that isn't the right format, etc
--       if we don't find any GSE ID's in the file, that's an indication of incorrect file format "didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!
-- small things to fix: when we upload the file "gds3" on abby's computer, error message gets displayed within a table - check when table heading is created
--       for this ^ we just need to reorder how the html is being returned. add the theader content into the generate_rows function
--       maybe in the generate_rows function, we return 2 strings: 1 is the table header, 1 is the table body content and we access them in self.bottom_half
-- should we have the loading spinner/results on a timer?
-
-- pagination
-- idea: copy/paste contents from pagination.js straight into the script tag of the webapp
+- formatting: error message alongside table of data for valid ID's
 
 #context of our project to give to chat when asking questions
 im making a web app and im using python, html, and css for the backend with javascript for the frontend. 
