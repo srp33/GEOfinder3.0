@@ -153,17 +153,34 @@ class WebApp:
                 bad_format_years.append(startYear)
                 bad_format_years.append(endYear)
 
-        #renders error message on screen if user has input an invalid ID or an invalid year
+        '''#renders error message on screen if user has input an invalid ID or an invalid year
+        message = ''
         if bad_format_ids or not_found_ids:  
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) 
+            message += 'ERROR: ' + error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)
         if bad_format_years or not_found_years:
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
+            message +=  'ERROR: ' + error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
+
 
         #if all entered ID's and years were valid, calls generate_rows to get results
-        else:
-            return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+        if valid_ids:
+            message += WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+
+        return message'''
+
+        # Renders error message on screen if user has input an invalid ID or an invalid year
+        message = ''
+        if bad_format_ids or not_found_ids:
+            message += f'<div class="error-message">ERROR: {error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)}</div>'
+
+        if bad_format_years or not_found_years:
+            message += f'<div class="error-message">ERROR: {error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)}</div>'
+
+        # If all entered IDs and years were valid, call generate_rows to get results
+        if valid_ids:
+            message += f'<div></div><div class="search-results">{WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)}</div>'
+
+        # Ensure there is space between error and results
+        return message
 
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):
@@ -186,8 +203,8 @@ class WebApp:
         # json.dumps(table_info)
 
         table = '''
-            <h2 class="py-4 mt-3 has-text-centered">Relevant Studies:</h2>
             <table class="table is-size-medium mx-6 is-centered" id="myTable" border="1">
+            <caption>Relevant Studies:</caption>
                 <thead>
                     <tr>
                         <th>GSE ID</th>
@@ -245,6 +262,9 @@ From Dr. Piccolo 12/10/2024:
 - Put error message between box and filters, color red
 - Modify so that we populate the table with the valid IDs even if invalid IDs are present
 - add in new gte_large file from Dr. Piccolo so that we have all the embeddings we need
+
+questions:
+- with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
 
 About page: 
 - Expand about page to a few sentences,pattern after the paper

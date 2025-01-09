@@ -110,3 +110,12 @@ tr:hover td{
 #fileNameBox {
     color:#3498db;
 }
+.error-message {
+    color: red;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-results {
+    margin-top: 20px;
+}

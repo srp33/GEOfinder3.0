@@ -18,25 +18,25 @@ def render_error():
 def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids):
     error_message = ""
     if bad_format_ids:
-        error_message += f"<tr><td>Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br></td></tr>"
+        error_message += f"Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br>"
     if not_found_ids:
-        error_message +=f"<tr><td>The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br></td></tr>"
+        error_message +=f"The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br>"
     if valid_ids:
-        error_message +=f"<tr><td>The following IDs you entered were valid: {', '.join(valid_ids)}<br></td></tr>"
+        error_message +=f"The following IDs you entered were valid: {', '.join(valid_ids)}<br>"
     return error_message
 
 def invalid_year_msg(bad_format_years, not_found_years, valid_years):
     error_message = ""
     if bad_format_years:
-        error_message += f"<tr><td>Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}</td></tr>"
+        error_message += f"Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}"
     if not_found_years:
-        error_message +=f"<tr><td>The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024</td></tr>"
+        error_message +=f"The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024"
     if valid_years:
-        error_message +=f"<tr><td>The following years you entered were valid: {', '.join(valid_years)}</td></tr>"
+        error_message +=f"The following years you entered were valid: {', '.join(valid_years)}"
     return error_message
 
 def experiment_error_msg():
-    return f"<tr><td>Please select one or more experiment types.</td></tr>"
+    return f"Please select one or more experiment types."
 
 def num_samples_error_msg ():
-    return f"<tr><td>Please select a range for number of samples.</td></tr>"
+    return f"Please select a range for number of samples."
