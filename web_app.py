@@ -254,23 +254,11 @@ if __name__ == '__main__':
 
 '''
 TO-DO, in order
-- Create help button with instructions of how to upload a file from GSE
 - fix error message formatting
+- make text in the textarea turn white when modified even after the submit button has been clicked 
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
-- text grays out after submitting once
-- gse ids should be separated by a space?
-
-DONE 1/9:
-- added in new gte-large file
-- fixed so that results for valid ID's are displayed even when there are others with errors
-- added about page info (eventually we will link it to bioarchive)
-- added error handling for if a user uploads a file with no GSE ID's
 
 questions:
 - with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
 - formatting: error message alongside table of data for valid ID's
-
-#context of our project to give to chat when asking questions
-im making a web app and im using python, html, and css for the backend with javascript for the frontend. 
-im using cherrypy as the framework. right now im trying to use javascript to implement pagination on the results i display, but it isn't working.
 '''
