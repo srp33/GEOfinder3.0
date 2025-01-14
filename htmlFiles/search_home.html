@@ -93,7 +93,7 @@ fileInput.addEventListener('change', function(event) {
             }
 
             if (matches.length > 0){
-                inputText.value = matches.join(', ');
+                inputText.value =inputText.value + matches.join(', ');
             } else {
                 errorPlaceholder.innerHTML = "<span style='color: red;'>Didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!</span>";
             }
