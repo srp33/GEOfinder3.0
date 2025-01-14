@@ -5,3 +5,4 @@ chroma.sqlite3
 error.txt
 collectionFiles
 tsvFiles
+*.pyc
