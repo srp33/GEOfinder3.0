@@ -257,7 +257,8 @@ TO-DO, in order
 - Create help button with instructions of how to upload a file from GSE
 - fix error message formatting
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
-- error: after trying to upload a file and trying to type an ID in, it doesn't work. 
+- text grays out after submitting once
+- gse ids should be separated by a space?
 
 DONE 1/9:
 - added in new gte-large file

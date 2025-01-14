@@ -3,11 +3,25 @@
 
     <div class="search-container" style="position: relative;">
         <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info mt-2" placeholder="Enter IDs (ie. GSE123, GSE456)" rows="10"></textarea>
-        <input type="file" id="fileInput" style="display: none;" />
-        <span class="icon fas fa-2x" style="cursor: pointer; position: absolute; bottom: 0; left: 0; z-index: 1;">
-            <i class="fa-solid fa-paperclip"></i>
-        </span>        
+        <input type="file" id="fileInput" style="display: none;" />      
     </div>
+    <span class="icon fas fa-2x" style="cursor: pointer; position: absolute; bottom: 0; left: 0; z-index: 1;">
+        <i class="fa-solid fa-paperclip"></i>
+    </span>  
+    <!-- Information Icon -->
+    <div id="info-icon" class="info-icon" title="Click for detailed instructions!">
+        <i class="fa-solid fa-circle-info"></i>
+    </div>
+    <!-- Modal Window -->
+     <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">&times;</span>
+            <h2>How to Navigate GEOFinder</h2>
+            <p>Here are the instructions</p>
+            <p>Tip: blablablablabla</p>
+        </div>
+     </div>
+
     <div id="errorPlaceholder"><p></p></div>
     <h2>Filters:</h2>
     <div class="submit-container">
@@ -67,6 +81,28 @@ $(document).ready(function() {
 const fileInput = document.getElementById('fileInput');
 const inputText = document.getElementById('inputText');
 const errorPlaceholder = document.getElementById('errorPlaceholder');
+
+// Get modal and icon elements
+const modal = document.getElementById('info-modal');
+const infoIcon = document.getElementById('info-icon');
+const closeModalBtn = document.getElementById('close-modal');
+
+// When the user clicks on the information icon, open the modal
+infoIcon.addEventListener('click', () => {
+    modal.style.display = "block";
+});
+
+// When the user clicks on the "X" button, close the modal
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = "none";
+});
+
+// When the user clicks anywhere outside of the modal, close it
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
 
 // Get the paperclip icon element
 const uploadIcon = document.querySelector('.icon i'); // Using querySelector to select the icon
