@@ -51,13 +51,7 @@
 <script>
 $(document).ready(function() {
     $('#inputText').keyup(function() {
-        var inputText = $(this).val();
-        if (inputText.length > 0) {
-            $('#submitButton').prop('disabled', false);
-            $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
-        } else {
-            $('#submitButton').prop('disabled', true);
-        }
+        checkTextareaContent();
     });
 
     function checkTextareaContent(){
@@ -106,6 +100,7 @@ fileInput.addEventListener('change', function(event) {
             checkTextareaContent(); // Presumably this is some function you have defined
         };
         reader.readAsText(file);
+        fileInput.value = "";
     }
 });
 
