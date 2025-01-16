@@ -68,7 +68,7 @@ class WebApp:
     #Internal:
 
     def read_text_file(self, file_path):
-        with open(file_path) as the_file:
+        with open(file_path, 'r', encoding='utf-8') as the_file:
             return the_file.read()
 
     #returns dictionary containing the user's filter selections
