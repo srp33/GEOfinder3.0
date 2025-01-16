@@ -101,13 +101,12 @@ class WebApp:
     def validate_input(self, ids, metadata_dct):
         if (ids == ""):
             return ""  
-        else:
-            #ensure that one or more checkboxes are checked for number of samples and experiment type
-            self.validate_checkboxes(metadata_dct)
-            #ensure that years are valid
-            self.validate_years(metadata_dct)
-            #ensure that ids are valid
-            self.validate_ids(ids, metadata_dct)
+        elif (self.validate_checkboxes(metadata_dct)):
+            return error_msg.checkbox_error_msg() 
+        elif (self.validate_years(metadata_dct)):
+            return self.validate_years(metadata_dct) 
+        
+        return self.validate_ids(ids, metadata_dct)
         
     def validate_ids(self, ids, metadata_dct):
         id_lst = re.split(r"\n|,",ids.strip())
@@ -134,11 +133,9 @@ class WebApp:
             
     def validate_checkboxes(self, metadata_dct):
         #make sure some boxes are checked
-        if metadata_dct["Num_Samples"] == []:
-            return error_msg.num_samples_error_msg() 
-        
-        if metadata_dct["Experiment_Type"] == []:
-            return error_msg.experiment_error_msg() 
+        if metadata_dct["Num_Samples"] == [] or metadata_dct["Experiment_Type"] == []:
+            return True
+        return False
         
     def validate_years(self, metadata_dct):
         #validates year input          
@@ -168,6 +165,7 @@ class WebApp:
         
         if bad_format_years or not_found_years:
             return error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years) 
+        return False
         
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):

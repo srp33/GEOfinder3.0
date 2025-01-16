@@ -37,8 +37,5 @@ def invalid_year_msg(bad_format_years, not_found_years, valid_years):
     error_message += "</h3>"
     return error_message
 
-def experiment_error_msg():
-    return f"<h3>ERROR: Please select one or more experiment types.</h3><br>"
-
-def num_samples_error_msg ():
-    return f"<h3>ERROR: Please select a range for number of samples.</h3><br>"
+def checkbox_error_msg():
+    return f"<h3>ERROR: Please check at least one box for each filter category.</h3><br>"
