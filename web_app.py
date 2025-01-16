@@ -242,7 +242,6 @@ if __name__ == '__main__':
 '''
 TO-DO, in order
 - fix error message formatting
-- make text in the textarea turn white when modified even after the submit button has been clicked 
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
 
 questions:
