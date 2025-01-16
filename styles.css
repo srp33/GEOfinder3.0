@@ -18,6 +18,10 @@ h1 {
 h2 {
     font-size: 20px;
 }
+h3 {
+    font-size: 20px;
+    color: red;
+}
 
 h4 {
     margin-left: 3rem;
@@ -27,9 +31,6 @@ nav {
     padding: 20px;
     text-align: left;
     margin-left: 3rem;
-}
-caption{
-    color:red;
 }
 .home-button {   
     color: inherit;         

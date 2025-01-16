@@ -99,34 +99,48 @@ class WebApp:
 
     #checks for invalid ID input, if all input is valid then calls generate_rows 
     def validate_input(self, ids, metadata_dct):
-        #validates ID input
         if (ids == ""):
             return ""  
         else:
-            id_lst = re.split(r"\n|,",ids.strip())
-            bad_format_ids = []
-            not_found_ids = []
-            valid_ids = []
+            #ensure that one or more checkboxes are checked for number of samples and experiment type
+            self.validate_checkboxes(metadata_dct)
+            #ensure that years are valid
+            self.validate_years(metadata_dct)
+            #ensure that ids are valid
+            self.validate_ids(ids, metadata_dct)
+        
+    def validate_ids(self, ids, metadata_dct):
+        id_lst = re.split(r"\n|,",ids.strip())
+        bad_format_ids = []
+        not_found_ids = []
+        valid_ids = []
 
-            for id in id_lst:
-                id = id.strip().upper()
+        for id in id_lst:
+            id = id.strip().upper()
 
-                if not re.search(r"GSE\d+",id):
-                    bad_format_ids.append(id)
-                elif id not in database_ids:
-                    not_found_ids.append(id)
-                else: 
-                    valid_ids.append(id)
+            if not re.search(r"GSE\d+",id):
+                bad_format_ids.append(id)
+            elif id not in database_ids:
+                not_found_ids.append(id)
+            else: 
+                valid_ids.append(id)
 
+        # If all entered IDs and years were valid, call generate_rows to get results
+        if valid_ids:
+            if bad_format_ids or not_found_ids:
+                return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids), WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+            else: 
+                return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+            
+    def validate_checkboxes(self, metadata_dct):
         #make sure some boxes are checked
         if metadata_dct["Num_Samples"] == []:
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:' + \
-                error_msg.num_samples_error_msg() 
+            return error_msg.num_samples_error_msg() 
         
         if metadata_dct["Experiment_Type"] == []:
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif" style="color: red;">ERROR:</caption>' + \
-                error_msg.experiment_error_msg() 
-
+            return error_msg.experiment_error_msg() 
+        
+    def validate_years(self, metadata_dct):
         #validates year input          
         bad_format_years = []
         not_found_years = []
@@ -144,8 +158,7 @@ class WebApp:
         if int(endYear)<2001 or int(endYear)>2024:
             not_found_years.append(endYear)
 
-        if(bad_format_years==[] and not_found_years==[]):  
-            print("both valid formats and years")     
+        if(bad_format_years==[] and not_found_years==[]):     
             if(int(endYear) >= int(startYear)):
                 valid_years.append(startYear)
                 valid_years.append(endYear)
@@ -154,36 +167,8 @@ class WebApp:
                 bad_format_years.append(endYear)
         
         if bad_format_years or not_found_years:
-            #message += f'<div class="error-message">ERROR: {error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)}</div>'
-            return '<caption class="error-message py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
-                error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years) 
-
-        '''#renders error message on screen if user has input an invalid ID or an invalid year
-        message = ''
-        if bad_format_ids or not_found_ids:  
-            message += 'ERROR: ' + error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)
-        if bad_format_years or not_found_years:
-            message +=  'ERROR: ' + error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
-
-
-        #if all entered ID's and years were valid, calls generate_rows to get results
-        if valid_ids:
-            message += WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
-
-        return message'''
-
-        # Renders error message on screen if user has input an invalid ID or an invalid year
-        message = ''
-        if bad_format_ids or not_found_ids:
-            message += f'<div class="error-message">ERROR: {error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)}</div>'
-
-        # If all entered IDs and years were valid, call generate_rows to get results
-        if valid_ids:
-            message += f'<div></div><div class="search-results">{WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)}</div>'
-
-        # Ensure there is space between error and results
-        return message
-
+            return error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years) 
+        
     #calls generate_query_results and writes results in html code, to display results in a table 
     def generate_rows(valid_ids=[], metadata_dct={}):
 
