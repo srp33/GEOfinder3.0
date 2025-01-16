@@ -85,7 +85,7 @@ $(document).ready(function() {
         var inputText = $('#inputText').val();
         if (inputText.length > 0) {
             $('#submitButton').prop('disabled', false);
-            $(this).removeClass('grayed-out'); // Remove grayed-out class to turn text black
+            $(this).removeClass('grayed-out'); 
         } else {
             $('#submitButton').prop('disabled', true);
         }
@@ -184,6 +184,7 @@ fileInput.addEventListener('change', function(event) {
                 // Handle success response
                 console.log(response);
                 $('#content').html(response);
+                $('#inputText').removeClass('grayed-out');
             },
             error: function(xhr, status, error) {
                 // Handle error

@@ -130,6 +130,8 @@ class WebApp:
                 return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids), WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
             else: 
                 return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+        else:
+            return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)
             
     def validate_checkboxes(self, metadata_dct):
         #make sure some boxes are checked
