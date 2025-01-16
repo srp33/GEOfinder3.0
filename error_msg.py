@@ -18,25 +18,25 @@ def render_error():
 def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids):
     error_message = ""
     if bad_format_ids:
-        error_message += f"Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br>"
+        error_message += f" Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br>"
     if not_found_ids:
-        error_message +=f"The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br>"
+        error_message +=f" The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br>"
     if valid_ids:
-        error_message +=f"The following IDs you entered were valid: {', '.join(valid_ids)}<br>"
+        error_message +=f" The following IDs you entered were valid: {', '.join(valid_ids)}<br>"
     return error_message
 
 def invalid_year_msg(bad_format_years, not_found_years, valid_years):
     error_message = ""
     if bad_format_years:
-        error_message += f"Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}"
+        error_message += f" Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}<br>"
     if not_found_years:
-        error_message +=f"The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024"
+        error_message +=f" The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024<br>"
     if valid_years:
-        error_message +=f"The following years you entered were valid: {', '.join(valid_years)}"
+        error_message +=f" The following years you entered were valid: {', '.join(valid_years)}<br>"
     return error_message
 
 def experiment_error_msg():
-    return f"Please select one or more experiment types."
+    return f" Please select one or more experiment types.</caption><br>"
 
 def num_samples_error_msg ():
-    return f"Please select a range for number of samples."
+    return f" Please select a range for number of samples.<br>"

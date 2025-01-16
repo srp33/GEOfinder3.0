@@ -120,11 +120,11 @@ class WebApp:
 
         #make sure some boxes are checked
         if metadata_dct["Num_Samples"] == []:
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:' + \
                 error_msg.num_samples_error_msg() 
         
         if metadata_dct["Experiment_Type"] == []:
-            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+            return '<caption class="py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif" style="color: red;">ERROR:</caption>' + \
                 error_msg.experiment_error_msg() 
 
         #validates year input          
@@ -152,6 +152,11 @@ class WebApp:
             else:
                 bad_format_years.append(startYear)
                 bad_format_years.append(endYear)
+        
+        if bad_format_years or not_found_years:
+            #message += f'<div class="error-message">ERROR: {error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)}</div>'
+            return '<caption class="error-message py-4 mt-3 subtitle is-3 has-text-centered is-family-sans-serif">ERROR:</caption>' + \
+                error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years) 
 
         '''#renders error message on screen if user has input an invalid ID or an invalid year
         message = ''
@@ -171,9 +176,6 @@ class WebApp:
         message = ''
         if bad_format_ids or not_found_ids:
             message += f'<div class="error-message">ERROR: {error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)}</div>'
-
-        if bad_format_years or not_found_years:
-            message += f'<div class="error-message">ERROR: {error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)}</div>'
 
         # If all entered IDs and years were valid, call generate_rows to get results
         if valid_ids:

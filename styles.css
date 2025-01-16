@@ -28,6 +28,9 @@ nav {
     text-align: left;
     margin-left: 3rem;
 }
+caption{
+    color:red;
+}
 .home-button {   
     color: inherit;         
 }
