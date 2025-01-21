@@ -241,7 +241,7 @@ TO-DO
 
 questions:
 - Line 123 in manuscript - should we have only used arrays for geofinder?
-- Should I change the GitHub repo to public?
-- Should “the following IDs you entered were valid” be red?
-- At least 2 datasets to search by? Can they not just search by 1?
+
+- add an error message where either the number is not found in GEO at all, or "this accession ID is not currently supported by this web app"
+- change "the following were valid" to blue color so the user knows it's okay
 '''
