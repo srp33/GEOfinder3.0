@@ -1,14 +1,12 @@
 import chromadb
 import numpy as np
 import pandas as pd
-import web_app
 from web_app import data_frame
    
 #returns a dataframe, filtered based on the user's selections
 def filter_by_metas(metadata_dct):
     global data_frame
-    df_copy = data_frame.copy(deep=True) 
-
+    df_copy = data_frame.copy(deep=True)
 
     #filtering the dataframe copy based on experiment type
     if(metadata_dct["Experiment_Type"]):

@@ -1,11 +1,11 @@
 import cherrypy
-import os
-import re 
-import traceback 
+from cherrypy.lib.static import serve_file
 import error_msg
 import helper
+import os
 import pandas as pd
-from  cherrypy.lib.static import serve_file
+import re 
+import traceback 
 
 #make global data frames
 global data_frame
