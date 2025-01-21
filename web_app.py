@@ -4,29 +4,22 @@ import re
 import traceback 
 import error_msg
 import helper
-import csv
 import pandas as pd
-import json
 from  cherrypy.lib.static import serve_file
 
-#make global data frame
+#make global data frames
 global data_frame
-data_frame = pd.DataFrame()
-with open("./tsvFiles/filtered_AllGEO.tsv", "r", encoding="utf-8") as meta_file:
-    data_frame = pd.read_csv(meta_file, sep="\t") 
+data_frame = pd.read_csv("tsvFiles/filtered_AllGEO.tsv.gz", sep="\t") 
 
-#global database_ids
-global database_ids
-with open("./tsvFiles/filtered_AllGEO_ids.tsv", "r", encoding="utf-8") as id_file:
-    all_geo_ids = pd.read_csv(id_file, sep="\t") 
-with open("./tsvFiles/gte_ids.tsv", "r", encoding="utf-8") as id_file:
-    gte_ids = pd.read_csv(id_file, sep="\t") 
+all_geo_ids = pd.read_csv("tsvFiles/filtered_AllGEO_ids.tsv.gz", sep="\t")
+gte_ids = pd.read_csv("tsvFiles/gte_ids.tsv.gz", sep="\t")
 gte_ids_set = set(gte_ids['GSE'])
 all_geo_ids_set = set(all_geo_ids['GSE'])
+
+global database_ids
 database_ids = gte_ids_set & all_geo_ids_set
 
 class WebApp:
-
     @cherrypy.expose
     def index(self):
         global data_frame
@@ -36,6 +29,7 @@ class WebApp:
         except:
             with open("error.txt", "w", encoding="utf-8") as error_file:
                 traceback.print_exc(file=error_file)
+
             return error_msg.render_error()
     
     @cherrypy.expose
