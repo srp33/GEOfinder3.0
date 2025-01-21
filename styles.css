@@ -19,10 +19,11 @@ h2 {
     font-size: 20px;
 }
 h3 {
+    padding: 30px;
+    text-align: center;
     font-size: 20px;
     color: red;
 }
-
 h4 {
     margin-left: 3rem;
     margin-top: 1.5rem;
@@ -31,6 +32,9 @@ nav {
     padding: 20px;
     text-align: left;
     margin-left: 3rem;
+}
+caption{
+    font-size: 20px;
 }
 .home-button {   
     color: inherit;         
@@ -98,6 +102,7 @@ tr:hover td{
     align-items: center;
 }
 #results {
+    margin: 30px;
     overflow: auto;
 }
 .loader {

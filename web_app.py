@@ -79,7 +79,7 @@ class WebApp:
     #generates results once user input is received. called from the query function
     def bottom_half_html(self, ids, metadata_dct):
         return f"""
-                    <div class="columns is-centered" id="results">
+                    <div id="results">
                         {self.validate_input(ids, metadata_dct)}      
                     </div>
                     
@@ -121,7 +121,7 @@ class WebApp:
         # If all entered IDs and years were valid, call generate_rows to get results
         if valid_ids:
             if bad_format_ids or not_found_ids:
-                return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids), WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+                return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) + WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
             else: 
                 return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
         else:
@@ -183,8 +183,8 @@ class WebApp:
         # table_info = results_df.to_dict(orient='records')
         # json.dumps(table_info)
 
-        table = '''
-            <table class="table is-size-medium mx-6 is-centered" id="myTable" border="1">
+        table = f'''
+            <table class="table is-centered" id="myTable" border="1">
             <caption>Relevant Studies:</caption>
                 <thead>
                     <tr>
@@ -198,16 +198,18 @@ class WebApp:
                         <th>Sub Series</th>
                     </tr>
                 </thead><tbody>'''
-        for id in match_ids:
+        #the range of this for loop makes it so that the ID that a user is querying on is not included in the results table
+        for i in range((len(valid_ids)), len(match_ids)):
+            id=match_ids[i]
             line = filtered_df[filtered_df["GSE"] == id]
-            table += f'<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}">{id}</a></td> \
+            table += f'''<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}" target="_blank">{id}</a></td> \
                 <td>{line["Summary"].values[0]}</td> \
                 <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
                 <td>{line["Experiment_Type"].values[0]}</td> \
                 <td>{line["Year_Released"].values[0]}</td> \
                 <td>{line["SuperSeries_GSE"].values[0]}</td> \
-                <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'
-        table += '</tbody></table>'
+                <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'''
+        table += f'''</tbody></table>'''
         return table
     
 if __name__ == '__main__':
@@ -234,11 +236,12 @@ if __name__ == '__main__':
     })
 
 '''
-TO-DO, in order
-- fix error message formatting
+TO-DO
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
 
 questions:
-- with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
-- formatting: error message alongside table of data for valid ID's
+- Line 123 in manuscript - should we have only used arrays for geofinder?
+- Should I change the GitHub repo to public?
+- Should “the following IDs you entered were valid” be red?
+- At least 2 datasets to search by? Can they not just search by 1?
 '''
