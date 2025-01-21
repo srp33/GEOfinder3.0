@@ -9,7 +9,7 @@ lineCount = 1
 
 with gzip.open("tsvFiles/gte-large.tsv.gz") as gse_emb_file:
     for line in gse_emb_file:
-        if lineCount % 100:
+        if lineCount % 100 == 0:
             print(f"Processed line {lineCount}")
         lineCount += 1
 
