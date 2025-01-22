@@ -238,10 +238,9 @@ if __name__ == '__main__':
 '''
 TO-DO
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
+- Info box is not scrolling 
 
 questions:
-- Line 123 in manuscript - should we have only used arrays for geofinder?
+- with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
 
-- add an error message where either the number is not found in GEO at all, or "this accession ID is not currently supported by this web app"
-- change "the following were valid" to blue color so the user knows it's okay
 '''
