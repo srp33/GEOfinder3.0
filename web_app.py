@@ -217,6 +217,11 @@ if __name__ == '__main__':
     icon_path = os.path.abspath("geo_logo.ico")
     pagination_path = os.path.abspath("pagination.js")
 
+    cherrypy.config.update({
+        'server.socket_host': '0.0.0.0',
+        'server.socket_port': 8080,
+    })
+
     cherrypy.quickstart(WebApp(), "/", {
             '/styles.css':
             {
