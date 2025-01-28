@@ -7,5 +7,3 @@ docker run -i -t --rm \
     -p 8080:8080 \
     srp33/geofinder \
         python web_app.py
-
-    --network host \
