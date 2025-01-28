@@ -19,10 +19,9 @@ h2 {
     font-size: 20px;
 }
 h3 {
-    padding: 30px;
+    padding: 20px;
     text-align: center;
     font-size: 20px;
-    color: red;
 }
 h4 {
     margin-left: 3rem;
@@ -125,8 +124,18 @@ tr:hover td{
     margin-bottom: 20px;
     text-align: center;
 }
+.valid-message {
+    color: #3498db;
+    text-align: center;
+}
 .search-results {
-    margin-top: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 .info-icon {
     font-size: 30px;
@@ -142,7 +151,7 @@ tr:hover td{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
+    width: 700px;
     max-height: 300px;
     overflow-y: auto;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);

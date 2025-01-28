@@ -18,22 +18,23 @@ def render_error():
 def invalid_input_msg(bad_format_ids, not_found_ids, valid_ids):
     error_message = f'''<h3>ERROR:'''
     if bad_format_ids:
-        error_message += f''' Sorry, the following IDs you entered were formatted incorrectly: {', '.join(bad_format_ids)}<br>'''
+        error_message += f'''<div class="error-message">Sorry, the following IDs you entered are formatted incorrectly: {', '.join(bad_format_ids)}</div>'''
     if not_found_ids:
-        error_message +=f''' The following IDs you entered were not found in our database: {', '.join(not_found_ids)}<br>'''
+        error_message += f'''<div class="error-message">The following IDs you entered are currently not supported by our database: {', '.join(not_found_ids)}<br>This could be because the GEO accession number is invalid, or that dataset is currently not included in GEOfinder.</div>'''
     if valid_ids:
-        error_message +=f''' The following IDs you entered were valid: {', '.join(valid_ids)}<br>'''
+        error_message +=f'''<div class="valid-message">The following IDs you entered are valid: {', '.join(valid_ids)}</div>'''
     error_message += f'''</h3>'''
     return error_message
 
 def invalid_year_msg(bad_format_years, not_found_years, valid_years):
     error_message = f'''<h3>ERROR:'''
     if bad_format_years:
-        error_message += f''' Sorry, the following years you entered were formatted incorrectly: {', '.join(bad_format_years)}<br>'''
+        
+        error_message += f'''<div class="error-message">Sorry, the following years you entered are formatted incorrectly: {', '.join(bad_format_years)}</div>'''
     if not_found_years:
-        error_message +=f''' The following years you entered were not found in our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024.<br>'''
+        error_message +=f'''<div class="error-message">The following years you entered are not supported by our database: {', '.join(not_found_years)}<br>Please enter a year within the range 2001-2024.</div>'''
     if valid_years:
-        error_message +=f''' The following years you entered were valid: {', '.join(valid_years)}<br>'''
+        error_message +=f'''<div class="valid-message">The following years you entered are valid: {', '.join(valid_years)}</div>'''
     error_message += f'''</h3>'''
     return error_message
 

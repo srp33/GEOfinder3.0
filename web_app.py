@@ -243,9 +243,4 @@ if __name__ == '__main__':
 '''
 TO-DO
 - later: pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
-- Info box is not scrolling 
-
-questions:
-- with new gte-large file, is it supposed to have embeddings for all ID's in GEO now?
-
 '''
