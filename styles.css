@@ -93,13 +93,14 @@ tr:hover td{
     margin-right: 25px; 
     margin-top: -30px;
 }
-.pagination {
+/*.pagination {
     margin-top: 25px;
     font-size: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+*/
 #results {
     margin: 30px;
     overflow: auto;
