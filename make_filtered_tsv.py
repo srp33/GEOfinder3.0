@@ -3,7 +3,7 @@ import gzip
 print("Preparing TSV files for use in the app...")
 
 #filters the AllGEO.tsv.gz file to remove irrelevant species and experiment types. Creates new file filtered_AllGEO.tsv
-with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file: 
+with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file:
     with gzip.open("./tsvFiles/filtered_AllGEO.tsv.gz", "w") as filtered_file:
         with gzip.open("./tsvFiles/filtered_AllGEO_ids.tsv.gz", "w") as ids_file:
             line1 = read_file.readline().decode()
@@ -14,7 +14,7 @@ with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file:
             #writes column headers to new file
             filtered_file.write("GSE\tSpecies\tExperiment_Type\tNum_Samples\tSamples_Range\tSummary\tYear_Released\tSuperSeries_GSE\tSubSeries_GSE\n".encode())
 
-            # GSE = items[0], experiment = items[4], num_samples = items[6] species = items[10] 
+            # GSE = items[0], experiment = items[4], num_samples = items[6] species = items[10]
             # Year_Released = items[5], SuperSeries_GSE = [12], SubSeries_GSEs = [13]
             for line in read_file:
                 items = line.decode().rstrip("\n").split("\t")
@@ -41,7 +41,7 @@ with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file:
                         if types == "Expression profiling by high throughput sequencing" or types == "Expression profiling by array":
                             valid_types.append(types)
                     valid_types.sort()
-                    experiment_type = " | ".join(valid_types)    
+                    experiment_type = " | ".join(valid_types)
                 else:
                     types = items[4]
                     if types == "Expression profiling by high throughput sequencing" or types == "Expression profiling by array":
@@ -50,8 +50,8 @@ with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file:
                 #checks if the row contains a SuperSeries, which means it is a SubSeries
                 if (items[12] == ""):
                     sub_series = "No"
-                else: 
-                    sub_series = "Yes"   
+                else:
+                    sub_series = "Yes"
 
                 #checks if the row contains a SubSeries, meaning it is a SuperSeries
                 if (items[13] == ""):
@@ -80,7 +80,7 @@ with gzip.open("./tsvFiles/AllGEO.tsv.gz", "r") as read_file:
                     filtered_file.write(f"{items[0]}\t{species}\t{experiment_type}\t{items[6]}\t{samples_range}\t{items[2]}\t{items[5]}\t{super_series}\t{sub_series}\n".encode())
                     ids_file.write(f"{items[0]}\n".encode())
 
-with gzip.open("./tsvFiles/gte-large.tsv.gz", "r") as read_file: 
+with gzip.open("./tsvFiles/gte-large.tsv.gz", "r") as read_file:
     with gzip.open("./tsvFiles/gte_ids.tsv.gz", "w") as write_file:
         write_file.write("GSE\n".encode())
 
