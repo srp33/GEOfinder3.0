@@ -4,7 +4,7 @@ chroma.sqlite3
 */*.bin
 *.tsv.gz
 error.txt
-collectionFiles
-tsvFiles
+data
 *.pyc
 nohup*
+tmp

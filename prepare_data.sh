@@ -2,34 +2,28 @@
 
 set -o errexit
 
-all_geo_tsv_file_path="tsvFiles/AllGEO.tsv.gz"
-#all_geo_json_file_path="/Data/AllGEO_Website.json.gz"
+all_geo_tsv_file_path="data/AllGEO.tsv.gz"
+filtered_geo_tsv_file_path="data/FilteredGEO.tsv.gz"
+embeddings_dir_path="data/Embeddings"
 
-mkdir -p tmp/Embeddings
+mkdir -p tmp/GSE tmp/Embeddings tmp/Models
+
+#docker run --rm \
+#    -v "$(pwd)":/app \
+#    --user $(id -u):$(id -g) \
+#    srp33/geofinder \
+#        python getAllGEO.py /app/tmp/GSE "${all_geo_tsv_file_path}"
+
+#docker run -i -t --rm \
+#    -v "$(pwd)":/app \
+#    --user $(id -u):$(id -g) \
+#    srp33/geofinder \
+#        python filterGEO.py "${all_geo_tsv_file_path}" "${filtered_geo_tsv_file_path}"
 
 #docker run -i -t --rm \
 docker run --rm \
     -v "$(pwd)":/app \
+    -v $(pwd)/tmp/Models:/Models \
     --user $(id -u):$(id -g) \
     srp33/geofinder \
-        python getAllGEO.py /app/tmp "$all_geo_tsv_file_path"
-#python prepareAllGEO_Website.py "$all_geo_tsv_file_path" "$all_geo_json_file_path"
-#python saveEmbeddings.py "$all_geo_json_file_path" checkpoints2.txt 100000000 "${tmp_dir_path}/Embeddings_Website"
-
-# This puts the embedding in a TSV file rather than JSON so it can be read line by line.
-#python reformatEmbeddings.py "${tmp_dir_path}/Embeddings_Website/thenlper/gte-large.gz" "${tmp_dir_path}/Embeddings_Website/thenlper/gte-large.tsv.gz"
-exit
-
-docker run -i -t --rm \
-    -v "$(pwd)":/app \
-    --user $(id -u):$(id -g) \
-    srp33/geofinder \
-        python make_filtered_tsv.py
-
-rm -rf collectionFiles
-
-docker run -i -t --rm \
-    -v "$(pwd)":/app \
-    --user $(id -u):$(id -g) \
-    srp33/geofinder \
-        python make_collection.py
+        python saveEmbeddings.py "${filtered_geo_tsv_file_path}" "thenlper/gte-large" "${embeddings_dir_path}"
