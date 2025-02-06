@@ -10,10 +10,6 @@ Please submit an issue if you have a question or suggestion.
 
 Although Docker containers can be run on many operating systems, these instructions are specific to Linux-based operating systems.
 
-1. Execute the build script: `bash build.sh`.
-2. Create a subdirectory called `tsvFiles`.
-3. Copy `AllGEO.tsv.gz` into the `tsvFiles` directory. If you do not have this file, contact us.
-4. Copy `gte-large.tsv.gz` into the `tsvFiles` directory. If you do not have this file, contact us.
-5. Prepare the TSV data: `bash prepare_data.sh`.
-6. Start the app: `bash run_app.sh`.
-7. Follow the instructions at the terminal.
+1. Execute the build script: `bash build.sh`. This creates the Docker image for the app.
+2. Execute the data-preparation script: `bash prepare_data.sh`. This script retrieves data from GEO and builds an embedding database. It takes many hours to complete.
+3. Start the app: `bash run_app.sh`. Follow the instructions at the terminal to access the app through your browser.
