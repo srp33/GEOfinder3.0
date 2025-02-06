@@ -12,4 +12,4 @@ Although Docker containers can be run on many operating systems, these instructi
 
 1. Execute the build script: `bash build.sh`. This creates the Docker image for the app.
 2. Execute the data-preparation script: `bash prepare_data.sh`. This script retrieves data from GEO and builds an embedding database. It takes many hours to complete.
-3. Start the app: `bash run_app.sh`. Follow the instructions at the terminal to access the app through your browser.
+3. Start the app: `bash run_app.sh`. The app should run on port 8080. You should be able to access the app through a Web browser at [http://localhost:8080/geofinder](http://localhost:8080/geofinder).
