@@ -1,36 +1,158 @@
 import cherrypy
 from cherrypy.lib.static import serve_file
-import error_msg
+from datetime import datetime
+import numpy as np
 import os
 import pandas as pd
 import re
-# import traceback
+import traceback
 
-#returns a dataframe, filtered based on the user's selections
-def filter_by_metas(metadata_dct):
-    global data_frame
-    df_copy = data_frame.copy(deep=True)
+class WebApp:
+    @cherrypy.expose
+    def index(self):
+        try:
+            return self.header() + self.search_home() + self.footer()
+        except:
+            return self.header() + self.format_error_msg(traceback.format_exc()) + self.footer()
 
-    #filtering the dataframe copy based on experiment type
-    if(metadata_dct["Experiment_Type"]):
-        if(len(metadata_dct["Experiment_Type"])==1):
-            if(metadata_dct["Experiment_Type"][0]=="Microarray"):
-                df_copy = df_copy[df_copy["Experiment_Type"].str.startswith("Expression profiling by array")]
-            elif(metadata_dct["Experiment_Type"][0]=="RNA sequencing"):
-                df_copy = df_copy[df_copy["Experiment_Type"].str.endswith("Expression profiling by high throughput sequencing")]
+    @cherrypy.expose
+    def about(self):
+        try:
+            return self.header() + self.read_text_file("htmlFiles/about.html") + self.footer()
+        except:
+            return self.header() + self.format_error_msg(traceback.format_exc()) + self.footer()
 
-    #filtering the dataframe copy based on number of samples
-    if(metadata_dct["Num_Samples"]):
-        #add selected sample numbers to dataframe
-        #df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
-        df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
+    # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
+    @cherrypy.expose
+    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
+        try:
+            # This should be robust to extract characters, inconsistent capitalization, etc.
+            ids = re.findall(r'GSE\d{1,8}', ids, re.IGNORECASE)
+            ids = [id.upper() for id in ids]
 
-    #filter by years
-    df_copy["Year_Released"] = pd.to_numeric(df_copy["Year_Released"], errors='coerce')
-    df_copy = df_copy[(df_copy["Year_Released"] >= int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] <= int(metadata_dct["Years"][1]))]
-    return df_copy
+            metadata_dict = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr], [startYear, endYear])
 
-#returns a dictionary of the closest results to the user IDs input
+            if len(ids) == 0:
+                return self.format_error_msg("No valid accession identifiers were provided.")
+
+            not_found_ids = self.validate_ids(ids)
+            if len(not_found_ids) > 0:
+                return self.format_error_msg(f'''The following ID(s) you entered are currently not available in GEOfinder: {', '.join(not_found_ids)}. This could be because they are not valid GEO accession number(s) or that we have filtered them for some reason.''')
+
+            if metadata_dict["Num_Samples"] == []:
+                return self.format_error_msg("Please check at least one box indicating the number of samples per data series.")
+            
+            if metadata_dict["Experiment_Type"] == []:
+                return self.format_error_msg("Please check at least one box indicating the experiment type(s).")
+            
+            matching_df = self.filter_by_metas(metadata_dct)
+            
+            # WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
+
+            #             elif (self.validate_checkboxes(metadata_dct)):
+            #     return format_error_msg("Error: Please check at least one box for each filter category.")
+
+            return self.format_error_msg("test")
+            # return self.bottom_half_html(ids, metadata_dict)
+        except:
+            return self.format_error_msg(traceback.format_exc())
+
+    ####################################################
+    # Private functions
+    ####################################################
+
+    def read_text_file(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as the_file:
+            return the_file.read()
+        
+    def header(self):
+        return self.read_text_file("htmlFiles/header.html")
+    
+    def search_home(self):
+        thisYear = datetime.now().year
+
+        startYearHtml = "<option selected>2001</option>\n"
+        for year in range(2002, thisYear + 1):
+            startYearHtml += f"<option>{year}</option>\n"
+
+        endYearHtml = ""
+        for year in range(2001, thisYear):
+            endYearHtml += f"<option>{year}</option>\n"
+
+        endYearHtml = f"<option selected>{thisYear}</option>"
+
+        return self.read_text_file("htmlFiles/search_home.html").replace("{{ startYears }}", startYearHtml).replace("{{ endYears }}", endYearHtml)
+
+    def footer(self):
+        return self.read_text_file("htmlFiles/footer.html")
+
+    # Return a dictionary containing the user's filter selections.
+    def make_metadata_dct(self, num_samples, experiment_type, years):
+        metadata_dct={}
+
+        if num_samples:
+            metadata_dct["Num_Samples"] = [val for val in num_samples if val]
+
+        if experiment_type:
+            metadata_dct["Experiment_Type"] = [val for val in experiment_type if val]
+
+        if years:
+            metadata_dct["Years"] = years
+
+        return metadata_dct
+    
+    def validate_ids(self, ids):
+        not_found_ids = []
+
+        for id in ids:
+            if id not in data_frame.index:
+                not_found_ids.append(id)
+
+        return not_found_ids
+
+    def format_error_msg(self, msg):
+        return f"<div class='content has-text-left is-size-5'><pre class='has-text-danger'>{msg}</pre></div>"
+    
+    # Returns a dataframe, filtered based on the user's selections.
+    def filter_by_metas(self, metadata_dct):
+        # global data_frame
+        df_copy = data_frame.copy(deep=True)
+
+        # Filter the dataframe copy based on experiment type.
+        if metadata_dct["Experiment_Type"]:
+            if len(metadata_dct["Experiment_Type"]) == 1:
+                if metadata_dct["Experiment_Type"][0]== "Microarray":
+                    df_copy = df_copy[df_copy["Experiment_Type"].str.startswith("Expression profiling by array")]
+                elif metadata_dct["Experiment_Type"][0] == "RNA sequencing":
+                    df_copy = df_copy[df_copy["Experiment_Type"].str.endswith("Expression profiling by high throughput sequencing")]
+
+        # Filter based on number of samples.
+        if metadata_dct["Num_Samples"]:
+            #add selected sample numbers to dataframe
+            #df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
+            df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
+
+        # Filter based on by year.
+        df_copy["Year_Released"] = pd.to_numeric(df_copy["Year_Released"], errors='coerce')
+        df_copy = df_copy[(df_copy["Year_Released"] >= int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] <= int(metadata_dct["Years"][1]))]
+        return df_copy
+
+    # Generates results once user input is received.
+    def bottom_half_html(self, ids, metadata_dct):
+        return f"""
+                    <div id="results">
+                        {self.validate_input(ids, metadata_dct)}
+                    </div>
+
+                    <script>
+                        $('#submitButton').prop('disabled', false);
+                        document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
+                    </script>
+                </body>
+            </html>
+            """
+
+# Returns a dictionary of the closest results to the user IDs input.
 def generate_id_query_results(input_ids):
     chroma_client = chromadb.PersistentClient(path="data/Embeddings")
     my_collection = chroma_client.get_collection(name="geo_collection")
@@ -48,201 +170,53 @@ def generate_id_query_results(input_ids):
 
     return similarityResults["ids"][0]
 
-class WebApp:
-    @cherrypy.expose
-    def index(self):
-        # renders the starting page
-        try:
-            return self.head() + self.search_home() + self.footer()
-        except:
-            # with open("error.txt", "w", encoding="utf-8") as error_file:
-            #     traceback.print_exc(file=error_file)
-            return error_msg.render_error()
+# Calls generate_query_results and writes results in html code, to display results in a table.
+def generate_rows(valid_ids=[], metadata_dct={}):
+    filtered_df = helper.filter_by_metas(metadata_dct)
+    filtered_ids = filtered_df["GSE"].to_list()
 
-    @cherrypy.expose
-    def about(self):
-        return self.head() + self.read_text_file("./htmlFiles/about.html") + self.footer()
+    # Queries the collection to get most similar results based on user's valid ID's.
+    if valid_ids:
+        results_ids = helper.generate_id_query_results(valid_ids)
 
-    @cherrypy.expose
-    def head(self):
-        return self.read_text_file("./htmlFiles/head.html")
+    # Creates a list of ID's, where the filtered ID's and query ID's overlap.
+    match_ids = [value for value in results_ids if value in filtered_ids]
 
-    @cherrypy.expose
-    def search_home(self):
-        return self.read_text_file("./htmlFiles/search_home.html")
+    results_df = filtered_df[filtered_df["GSE"].isin(match_ids)]
+    results_df = results_df.reset_index(drop=True)
 
-    @cherrypy.expose
-    def footer(self):
-        return self.read_text_file("./htmlFiles/footer.html")
+    table = f'''
+        <table class="table is-centered" id="myTable" border="1">
+        <caption>Relevant Studies:</caption>
+            <thead>
+                <tr>
+                    <th>GSE ID</th>
+                    <th>Summary</th>
+                    <th>Species</th>
+                    <th># Samples</th>
+                    <th>Experiment Type</th>
+                    <th>Year Released</th>
+                    <th>Super Series</th>
+                    <th>Sub Series</th>
+                </tr>
+            </thead><tbody>'''
 
-    # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
-    @cherrypy.expose
-    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
-        metadata_dct = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr], [startYear, endYear])
-        try:
-            return self.bottom_half_html(ids, metadata_dct)
-        except:
-            # with open("error.txt", "w", encoding="utf-8") as error_file:
-            #     traceback.print_exc(file=error_file)
-            return error_msg.render_error()
+    # The range of this for loop makes it so that the ID that a user is querying on is not included in the results table.
+    for i in range((len(valid_ids)), len(match_ids)):
+        id=match_ids[i]
+        line = filtered_df[filtered_df["GSE"] == id]
 
-    ####################################################
-    # Private functions
-    ####################################################
-
-    def read_text_file(self, file_path):
-        with open(file_path, 'r', encoding='utf-8') as the_file:
-            return the_file.read()
-
-    # Returns a dictionary containing the user's filter selections.
-    def make_metadata_dct(self, num_samples, experiment_type, years):
-        metadata_dct={}
-
-        if num_samples:
-            metadata_dct["Num_Samples"] = [val for val in num_samples if val]
-        if experiment_type:
-            metadata_dct["Experiment_Type"] = [val for val in experiment_type if val]
-        if years:
-            metadata_dct["Years"] = [val for val in years if val]
-
-        return metadata_dct
-
-    # Generates results once user input is received. called from the query function.
-    def bottom_half_html(self, ids, metadata_dct):
-        return f"""
-                    <div id="results">
-                        {self.validate_input(ids, metadata_dct)}
-                    </div>
-
-                    <script>
-                        $('#submitButton').prop('disabled', false);
-                        document.getElementById('results').scrollIntoView({{ behavior: "smooth", block: "start" }});
-                    </script>
-                </body>
-            </html>
-            """
-
-    # Checks for invalid ID input, if all input is valid then calls generate_rows.
-    def validate_input(self, ids, metadata_dct):
-        if (ids == ""):
-            return ""
-        elif (self.validate_checkboxes(metadata_dct)):
-            return error_msg.checkbox_error_msg()
-        elif (self.validate_years(metadata_dct)):
-            return self.validate_years(metadata_dct)
-
-        return self.validate_ids(ids, metadata_dct)
-
-    def validate_ids(self, ids, metadata_dct):
-        id_lst = re.split(r"\n|,",ids.strip())
-        bad_format_ids = []
-        not_found_ids = []
-        valid_ids = []
-
-        for id in id_lst:
-            id = id.strip().upper()
-
-            if not re.search(r"GSE\d+",id):
-                bad_format_ids.append(id)
-            elif id not in database_ids:
-                not_found_ids.append(id)
-            else:
-                valid_ids.append(id)
-
-        # If all entered IDs and years were valid, call generate_rows to get results.
-        if valid_ids:
-            if bad_format_ids or not_found_ids:
-                return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids) + WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
-            else:
-                return WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
-        else:
-            return error_msg.invalid_input_msg(bad_format_ids, not_found_ids, valid_ids)
-
-    def validate_checkboxes(self, metadata_dct):
-        # Make sure some boxes are checked.
-        if metadata_dct["Num_Samples"] == [] or metadata_dct["Experiment_Type"] == []:
-            return True
-        
-        return False
-
-    def validate_years(self, metadata_dct):
-        # Validate year input.
-        bad_format_years = []
-        not_found_years = []
-        valid_years = []
-        startYear = metadata_dct["Years"][0]
-        endYear = metadata_dct["Years"][1]
-
-        if not re.search(r"^\d{4}$", startYear):
-            bad_format_years.append(startYear)
-        if int(startYear)<2001 or int(startYear)>2024:
-            not_found_years.append(startYear)
-
-        if not re.search(r"^\d{4}$", endYear):
-            bad_format_years.append(endYear)
-        if int(endYear)<2001 or int(endYear)>2024:
-            not_found_years.append(endYear)
-
-        if(bad_format_years==[] and not_found_years==[]):
-            if(int(endYear) >= int(startYear)):
-                valid_years.append(startYear)
-                valid_years.append(endYear)
-            else:
-                bad_format_years.append(startYear)
-                bad_format_years.append(endYear)
-
-        if bad_format_years or not_found_years:
-            return error_msg.invalid_year_msg(bad_format_years, not_found_years, valid_years)
-
-        return False
-
-    # Calls generate_query_results and writes results in html code, to display results in a table
-    def generate_rows(valid_ids=[], metadata_dct={}):
-        filtered_df = helper.filter_by_metas(metadata_dct)
-        filtered_ids = filtered_df["GSE"].to_list()
-
-        # Queries the collection to get most similar results based on user's valid ID's
-        if valid_ids:
-            results_ids = helper.generate_id_query_results(valid_ids)
-
-        # Creates a list of ID's, where the filtered ID's and query ID's overlap
-        match_ids = [value for value in results_ids if value in filtered_ids]
-
-        results_df = filtered_df[filtered_df["GSE"].isin(match_ids)]
-        results_df = results_df.reset_index(drop=True)
-
-        table = f'''
-            <table class="table is-centered" id="myTable" border="1">
-            <caption>Relevant Studies:</caption>
-                <thead>
-                    <tr>
-                        <th>GSE ID</th>
-                        <th>Summary</th>
-                        <th>Species</th>
-                        <th># Samples</th>
-                        <th>Experiment Type</th>
-                        <th>Year Released</th>
-                        <th>Super Series</th>
-                        <th>Sub Series</th>
-                    </tr>
-                </thead><tbody>'''
-
-        # The range of this for loop makes it so that the ID that a user is querying on is not included in the results table.
-        for i in range((len(valid_ids)), len(match_ids)):
-            id=match_ids[i]
-            line = filtered_df[filtered_df["GSE"] == id]
-
-            table += f'''<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}" target="_blank">{id}</a></td> \
-                <td>{line["Summary"].values[0]}</td> \
-                <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
-                <td>{line["Experiment_Type"].values[0]}</td> \
-                <td>{line["Year_Released"].values[0]}</td> \
-                <td>{line["SuperSeries_GSE"].values[0]}</td> \
-                <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'''
-        
-        table += f'''</tbody></table>'''
-        
-        return table
+        table += f'''<tr> <td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}" target="_blank">{id}</a></td> \
+            <td>{line["Summary"].values[0]}</td> \
+            <td>{line["Species"].values[0]}</td> <td>{line["Num_Samples"].values[0]}</td> \
+            <td>{line["Experiment_Type"].values[0]}</td> \
+            <td>{line["Year_Released"].values[0]}</td> \
+            <td>{line["SuperSeries_GSE"].values[0]}</td> \
+            <td>{line["SubSeries_GSE"].values[0]}</td> </tr>'''
+    
+    table += f'''</tbody></table>'''
+    
+    return table
 
 if __name__ == '__main__':
     style_path = os.path.abspath("styles.css")
@@ -250,9 +224,7 @@ if __name__ == '__main__':
     # pagination_path = os.path.abspath("pagination.js")
 
     global data_frame
-    data_frame = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t")
-    print(data_frame)
-    sys.exit(1)
+    data_frame = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t", index_col=0)
 
     cherrypy.config.update({
         'server.socket_host': '0.0.0.0',
@@ -270,14 +242,4 @@ if __name__ == '__main__':
                 'tools.staticfile.on': True,
                 'tools.staticfile.filename': icon_path
             },
-            # '/pagination.js':
-            # {
-            #     'tools.staticfile.on': True,
-            #     'tools.staticfile.filename': pagination_path
-            # }
     })
-
-'''
-TO-DO
-- pagination (idea: copy/paste contents from pagination.js straight into the script tag of the webapp)
-'''
