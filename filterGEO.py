@@ -3,7 +3,11 @@ import os
 import sys
 
 in_tsv_file_path = sys.argv[1]
-out_tsv_file_path = sys.argv[2]
+filtered_tsv_file_path = sys.argv[2]
+experiment_types_file_path = sys.argv[3]
+species_file_path = sys.argv[4]
+experiment_types_series_file_path = sys.argv[5]
+species_series_file_path = sys.argv[6]
 
 experiment_types_dict = {}
 species_dict = {}
@@ -14,8 +18,8 @@ with gzip.open(in_tsv_file_path) as in_tsv_file:
     for line in in_tsv_file:
         line_items = line.decode().rstrip("\n").split("\t")
 
-        experiment_type = line_items[4].lower().split("|")
-        species = line_items[8].lower().split("|")
+        experiment_type = line_items[4].split(" | ")
+        species = line_items[8].split(" | ")
 
         for x in experiment_type:
             if x not in experiment_types_dict:
@@ -46,28 +50,47 @@ for species, count in species_dict.items():
 #    print(species, species_dict[species])
 
 with gzip.open(in_tsv_file_path) as in_tsv_file:
-    with gzip.open(out_tsv_file_path, "w") as out_tsv_file:
-        out_tsv_file.write(in_tsv_file.readline())
+    with gzip.open(filtered_tsv_file_path, "w") as filtered_tsv_file:
+        with gzip.open(experiment_types_series_file_path, "w") as experiment_types_series_file:
+            with gzip.open(species_series_file_path, "w") as species_series_file:
+                filtered_tsv_file.write(in_tsv_file.readline())
+                experiment_types_series_file.write((f"GSE\tExperiment_Type\n").encode())
+                species_series_file.write((f"GSE\tSpecies\n").encode())
 
-        lineCount = 0
-        for line in in_tsv_file:
-            lineCount += 1
-            line_items = line.decode().rstrip("\n").split("\t")
+                lineCount = 0
+                for line in in_tsv_file:
+                    lineCount += 1
+                    line_items = line.decode().rstrip("\n").split("\t")
 
-            experiment_type = line_items[4].lower().split("|")
-            species = line_items[8].lower().split("|")
+                    gse = line_items[0]
+                    experiment_type = line_items[4].split(" | ")
+                    species = line_items[8].split(" | ")
 
-            keep_experiment_type = False
-            for x in experiment_type:
-                if x in top_experiment_types:
-                    keep_experiment_type = True
-                    break
+                    keep_experiment_type = False
+                    for x in experiment_type:
+                        if x in top_experiment_types:
+                            keep_experiment_type = True
+                            break
 
-            keep_species = False
-            for s in species:
-                if s in top_species:
-                    keep_species = True
-                    break
+                    keep_species = False
+                    for s in species:
+                        if s in top_species:
+                            keep_species = True
+                            break
 
-            if keep_experiment_type and keep_species:
-                out_tsv_file.write(line)
+                    if keep_experiment_type and keep_species:
+                        filtered_tsv_file.write(line)
+
+                        for x in experiment_type:
+                            experiment_types_series_file.write((f"{gse}\t{x}\n").encode())
+
+                        for s in species:
+                            species_series_file.write((f"{gse}\t{s}\n").encode())
+
+with gzip.open(experiment_types_file_path, "w") as experiment_types_file:
+    for exp in sorted(list(top_experiment_types)):
+        experiment_types_file.write((f"{exp}\n").encode())
+
+with gzip.open(species_file_path, "w") as species_file:
+    for sp in sorted(list(top_species)):
+        species_file.write((f"{sp}\n").encode())

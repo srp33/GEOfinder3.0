@@ -37,9 +37,10 @@ embeddings_dir_path = sys.argv[3]
 model = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=checkpoint)
 
 # Create embedding database.
-shutil.rmtree(embeddings_dir_path)
+#shutil.rmtree(embeddings_dir_path)
 chroma_client = chromadb.PersistentClient(path = embeddings_dir_path)
-embedding_collection = chroma_client.create_collection(name = "geo_collection")
+
+embedding_collection = chroma_client.get_or_create_collection(name = "geo_collection")
 
 line_count = 0
 
@@ -53,14 +54,17 @@ with gzip.open(in_tsv_file_path) as in_tsv_file:
 
         line_items = line.decode().rstrip("\n").split("\t")
         gse = line_items[0]
-        title = line_items[1]
-        summary = line_items[2]
-        overall_design = line_items[3]
 
-        text = clean_text(f"{title} {summary} {overall_design}")
-        embedding = model([text])[0].tolist()
+        has_embedding = len(embedding_collection.get(ids=gse)["ids"]) == 1
 
-        embedding_collection.add(
-            embeddings = embedding,
-            ids = gse
-        )
+        if not has_embedding:
+            print(f"Saving embedding for {gse}")
+
+            title = line_items[1]
+            summary = line_items[2]
+            overall_design = line_items[3]
+
+            text = clean_text(f"{title} {summary} {overall_design}")
+            embedding = model([text])[0].tolist()
+
+            embedding_collection.add(embeddings = embedding, ids = gse)
