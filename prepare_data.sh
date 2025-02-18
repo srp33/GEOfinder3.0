@@ -12,24 +12,24 @@ embeddings_dir_path="data/Embeddings"
 
 mkdir -p tmp/GSE tmp/Embeddings tmp/Models
 
-#docker run -i -t --rm \
-docker run --rm \
-    -v "$(pwd)":/app \
-    --user $(id -u):$(id -g) \
-    srp33/geofinder \
-        python getAllGEO.py /app/tmp/GSE "${all_geo_tsv_file_path}"
+##docker run -i -t --rm \
+#docker run --rm \
+#    -v "$(pwd)":/app \
+#    --user $(id -u):$(id -g) \
+#    srp33/geofinder \
+#        python getAllGEO.py /app/tmp/GSE "${all_geo_tsv_file_path}"
 
-#docker run -i -t --rm \
-docker run --rm \
-    -v "$(pwd)":/app \
-    --user $(id -u):$(id -g) \
-    srp33/geofinder \
-        python filterGEO.py "${all_geo_tsv_file_path}" \
-            "${filtered_geo_tsv_file_path}" \
-            "${experiment_types_file_path}" \
-            "${species_file_path}" \
-            "${experiment_types_series_file_path}" \
-            "${species_series_file_path}"
+##docker run -i -t --rm \
+#docker run --rm \
+#    -v "$(pwd)":/app \
+#    --user $(id -u):$(id -g) \
+#    srp33/geofinder \
+#        python filterGEO.py "${all_geo_tsv_file_path}" \
+#            "${filtered_geo_tsv_file_path}" \
+#            "${experiment_types_file_path}" \
+#            "${species_file_path}" \
+#            "${experiment_types_series_file_path}" \
+#            "${species_series_file_path}"
 
 #docker run -i -t --rm \
 docker run --rm \

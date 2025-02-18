@@ -93,7 +93,7 @@ with gzip.open(out_tsv_file_path, "w") as out_tsv_file:
                 if len(line) == 0:
                     continue
 
-                line = line.replace("\t", " ").replace("\n", " ")
+                line = line.replace("\t", " ").replace("\n", " ").replace("\"", "")
                 line_items = re.split(" += +", line)
 
                 if len(line_items) < 2:
