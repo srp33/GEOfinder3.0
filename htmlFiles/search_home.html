@@ -37,42 +37,69 @@
     </div>
     <div class="boxes">
         <div class="columns">
-            <div class="column is-2"><strong>Number of Samples:</strong><br>
-                <input type="checkbox" id="a" name="a" value="1-10" checked>
-                <label for="a">1-10</label><br>
-                <input type="checkbox" id="b" name="b" value="11-50" checked>
-                <label for="b">11-50</label><br>
-                <input type="checkbox" id="c" name="c" value="51-100" checked>
-                <label for="c">51-100</label><br>
-                <input type="checkbox" id="d" name="d" value="101-500" checked>
-                <label for="d">101-500</label><br>
-                <input type="checkbox" id="e" name="e" value="501-1000" checked>
-                <label for="e">501-1000</label><br>
-                <input type="checkbox" id="f" name="f" value="1000+" checked>
-                <label for="f">1000+</label><br>
-            </div>
-            <div class="column is-2"><strong>Experiment Type:</strong><br>
-                <input type="checkbox" id="rnaSeq" name="rnaSeq" value="RNA sequencing" checked>
-                <label for="rnaSeq">Expression profiling by high throughput sequencing</label><br>
-                <input type="checkbox" id="microarr" name="microarr" value="Microarray" checked>
-                <label for="microarr">Expression profiling by array</label>
-            </div> 
             <div class="column is-2">
-                <div>
-                    <strong>Start Year:</strong>
-                    <div class="select">
-                        <select id="startYear">
-                            {{ startYears }}
-                        </select>
-                    </div>
+                <div class="field has-text-weight-bold">
+                    Number of Samples:
                 </div>
-                <div class="mt-4">
-                    <strong>End Year:</strong>
-                    <div class="select">
-                        <select id="endYear">
-                            {{ endYears }}
-                        </select>
-                    </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="1-10" value="numSamplesRange" checked> 1 - 10
+                    </label>
+                </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="11-50" value="numSamplesRange" checked> 11 - 50
+                    </label>
+                </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="51-100" value="numSamplesRange" checked> 51 - 100
+                    </label>
+                </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="101-500" value="numSamplesRange" checked> 101 - 500
+                    </label>
+                </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="501-1000" value="numSamplesRange" checked> 501 - 1000
+                    </label>
+                </div>
+                <div class="field">
+                    <label class='checkbox'>
+                        <input type="checkbox" name="1000+" value="numSamplesRange" checked> 1000+
+                    </label>
+                </div>
+            </div>
+            <div class="column is-2">
+                <div class="field has-text-weight-bold">
+                    Experiment Type(s):
+                </div>
+                {{ experimentTypes }}
+            </div>
+            <div class="column is-2">
+                <div class="field has-text-weight-bold">
+                    Species:
+                </div>
+                {{ species }}
+            </div>
+            <div class="column is-2">
+                <div class="field has-text-weight-bold">
+                    Start Year:
+                </div>
+                <div class="select">
+                    <select id="startYear">
+                        {{ startYears }}
+                    </select>
+                </div>
+                <div class="field mt-4 has-text-weight-bold">
+                    End Year:
+                </div>
+                <div class="select">
+                    <select id="endYear">
+                        {{ endYears }}
+                    </select>
                 </div>
             </div>
         </div>
@@ -143,7 +170,7 @@ fileInput.addEventListener('change', function(event) {
             } else {
                 errorPlaceholder.innerHTML = "<span style='color: red;'>Didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!</span>";
             }
-            checkTextareaContent(); // Presumably this is some function you have defined
+            checkTextareaContent();
         };
         reader.readAsText(file);
         fileInput.value = "";
@@ -152,10 +179,10 @@ fileInput.addEventListener('change', function(event) {
 
     $('#submitButton').click(function() {
         var inputText = $('#inputText').val();
-        var checkboxValues = {};
+        var checkboxDict = {};
         
         $('input[type=checkbox]').each(function() {
-            checkboxValues[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
+            checkboxDict[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
         });
 
         // $(this).prop('disabled', true); // Disable the button
@@ -165,15 +192,8 @@ fileInput.addEventListener('change', function(event) {
             type: 'POST',
             url: '/geofinder/query',
             data: {
-                ids: inputText,
-                a: checkboxValues['a'],
-                b: checkboxValues['b'],
-                c: checkboxValues['c'],
-                d: checkboxValues['d'],
-                e: checkboxValues['e'],
-                f: checkboxValues['f'],
-                rnaSeq: checkboxValues['rnaSeq'],
-                microarr: checkboxValues['microarr'],
+                searchSeries: inputText,
+                checkboxDict: JSON.stringify(checkboxDict),
                 startYear: document.getElementById('startYear').value,
                 endYear: document.getElementById('endYear').value
             },

@@ -1,6 +1,9 @@
 import cherrypy
 from cherrypy.lib.static import serve_file
+import chromadb
 from datetime import datetime
+import gzip
+import json
 import numpy as np
 import os
 import pandas as pd
@@ -22,35 +25,38 @@ class WebApp:
         except:
             return self.header() + self.format_error_msg(traceback.format_exc()) + self.footer()
 
-    # a) 1-10, b) 11-50, c) 51-100, d) 101-500, e) 501-1000, f) 1000+
     @cherrypy.expose
-    def query(self, ids, a="", b="", c="", d="", e="", f="", rnaSeq="", microarr="", startYear="", endYear=""):
+    def query(self, searchSeries, checkboxDict, startYear, endYear):
         try:
             # This should be robust to extract characters, inconsistent capitalization, etc.
-            ids = re.findall(r'GSE\d{1,8}', ids, re.IGNORECASE)
-            ids = [id.upper() for id in ids]
+            searchSeries = re.findall(r'GSE\d{1,8}', searchSeries, re.IGNORECASE)
+            searchSeries = [id.upper() for id in searchSeries]
 
-            metadata_dict = self.make_metadata_dct([a, b, c, d, e, f], [rnaSeq, microarr], [startYear, endYear])
-
-            if len(ids) == 0:
+            if len(searchSeries) == 0:
                 return self.format_error_msg("No valid accession identifiers were provided.")
-
-            not_found_ids = self.validate_ids(ids)
-            if len(not_found_ids) > 0:
-                return self.format_error_msg(f'''The following ID(s) you entered are currently not available in GEOfinder: {', '.join(not_found_ids)}. This could be because they are not valid GEO accession number(s) or that we have filtered them for some reason.''')
-
-            if metadata_dict["Num_Samples"] == []:
-                return self.format_error_msg("Please check at least one box indicating the number of samples per data series.")
             
-            if metadata_dict["Experiment_Type"] == []:
-                return self.format_error_msg("Please check at least one box indicating the experiment type(s).")
+            # # global full_data_frame
+            # fullDataFrame = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t", index_col=0)
+
+            # not_found_ids = self.validate_ids(searchSeries, fullDataFrame)
+            # if len(not_found_ids) > 0:
+            #     return self.format_error_msg(f'''The following ID(s) you entered are currently not available in GEOfinder: {', '.join(not_found_ids)}. This could be because they are not valid GEO accession number(s) or that we have filtered them for some reason.''')
             
-            matching_df = self.filter_by_metas(metadata_dct)
+            # checkboxDict = json.loads(checkboxDict)
+
+            # metadataDict, errorMsg = self.make_metadata_dict(checkboxDict, startYear, endYear)
+
+            # if errorMsg != "":
+            #     return self.format_error_msg(errorMsg)
+
+            # metaSeries = self.filter_by_metas(metadataDict, fullDataFrame)
+
+            print("aaaaaaaaaaaaaaaaaaaaa")
+
+            metaSeries = []
+            embeddingSeries = self.search_embeddings(metaSeries, searchSeries)
             
             # WebApp.generate_rows(valid_ids=valid_ids, metadata_dct=metadata_dct)
-
-            #             elif (self.validate_checkboxes(metadata_dct)):
-            #     return format_error_msg("Error: Please check at least one box for each filter category.")
 
             return self.format_error_msg("test")
             # return self.bottom_half_html(ids, metadata_dict)
@@ -81,61 +87,100 @@ class WebApp:
 
         endYearHtml = f"<option selected>{thisYear}</option>"
 
-        return self.read_text_file("htmlFiles/search_home.html").replace("{{ startYears }}", startYearHtml).replace("{{ endYears }}", endYearHtml)
+        experimentTypesHtml = ""
+        with gzip.open("data/ExperimentTypes.tsv.gz") as expTypesFile:
+            for line in expTypesFile:
+                expType = line.decode().rstrip("\n")
+                experimentTypesHtml += f"<div class='field'><label class='checkbox'><input type='checkbox' name='{expType}' value='experimentType' checked /> {expType}</label></div>"
+
+        speciesHtml = ""
+        with gzip.open("data/Species.tsv.gz") as speciesFile:
+            for line in speciesFile:
+                species = line.decode().rstrip("\n")
+                speciesHtml += f"<div class='field'><label class='checkbox'><input type='checkbox' name='{species}' value='species' checked /> {species}</label></div>"
+
+        return self.read_text_file("htmlFiles/search_home.html").replace("{{ startYears }}", startYearHtml).replace("{{ endYears }}", endYearHtml).replace("{{ experimentTypes }}", experimentTypesHtml).replace("{{ species }}", speciesHtml)
 
     def footer(self):
         return self.read_text_file("htmlFiles/footer.html")
 
-    # Return a dictionary containing the user's filter selections.
-    def make_metadata_dct(self, num_samples, experiment_type, years):
-        metadata_dct={}
+    def format_error_msg(self, msg):
+        return f"<div class='content has-text-left is-size-5'><pre class='has-text-danger'>{msg}</pre></div>"
 
-        if num_samples:
-            metadata_dct["Num_Samples"] = [val for val in num_samples if val]
-
-        if experiment_type:
-            metadata_dct["Experiment_Type"] = [val for val in experiment_type if val]
-
-        if years:
-            metadata_dct["Years"] = years
-
-        return metadata_dct
-    
-    def validate_ids(self, ids):
+    def validate_ids(self, ids, fullDataFrame):
         not_found_ids = []
 
         for id in ids:
-            if id not in data_frame.index:
+            if id not in fullDataFrame.index:
                 not_found_ids.append(id)
 
         return not_found_ids
 
-    def format_error_msg(self, msg):
-        return f"<div class='content has-text-left is-size-5'><pre class='has-text-danger'>{msg}</pre></div>"
+    # Return a dictionary containing the user's filter selections.
+    def make_metadata_dict(self, checkboxDict, startYear, endYear):
+        metadataDict={
+            "Num_Samples_Range": [],
+            "Experiment_Types": [],
+            "Species": [],
+            "Start_Year": int(startYear),
+            "End_Year": int(endYear)
+        }
+
+        for checkboxValue, checkboxCategory in checkboxDict.items():
+            if checkboxCategory == "numSamplesRange":
+                metadataDict["Num_Samples_Range"].append(checkboxValue)
+            elif checkboxCategory == "experimentType":
+                metadataDict["Experiment_Types"].append(checkboxValue)
+            elif checkboxCategory == "species":
+                metadataDict["Species"].append(checkboxValue)
+
+        if metadataDict["Num_Samples_Range"] == []:
+            return metadataDict, "Please check at least one box indicating the number of samples per data series."
+
+        if metadataDict["Experiment_Types"] == []:
+            metadataDict, "Please check at least one box indicating the experiment type(s)."
+
+        if metadataDict["Species"] == []:
+            metadataDict, "Please check at least one box indicating the species."
+
+        return metadataDict, ""
     
-    # Returns a dataframe, filtered based on the user's selections.
-    def filter_by_metas(self, metadata_dct):
-        # global data_frame
-        df_copy = data_frame.copy(deep=True)
+    # Filters series based on the user's selections.
+    def filter_by_metas(self, metadataDict, fullDataFrame):
+        # matchingDataFrame = fullDataFrame.copy(deep=True)
 
-        # Filter the dataframe copy based on experiment type.
-        if metadata_dct["Experiment_Type"]:
-            if len(metadata_dct["Experiment_Type"]) == 1:
-                if metadata_dct["Experiment_Type"][0]== "Microarray":
-                    df_copy = df_copy[df_copy["Experiment_Type"].str.startswith("Expression profiling by array")]
-                elif metadata_dct["Experiment_Type"][0] == "RNA sequencing":
-                    df_copy = df_copy[df_copy["Experiment_Type"].str.endswith("Expression profiling by high throughput sequencing")]
+        print(type(metadataDict["Start_Year"]))
+        fullSeries = fullDataFrame[(fullDataFrame['Samples_Range'].isin(metadataDict["Num_Samples_Range"])) & (fullDataFrame["Year_Released"] >= metadataDict["Start_Year"]) & (fullDataFrame["Year_Released"] <= metadataDict["End_Year"])].index
 
-        # Filter based on number of samples.
-        if metadata_dct["Num_Samples"]:
-            #add selected sample numbers to dataframe
-            #df_copy = df_copy[df_copy["Samples_Range"] in metadata_dct["Num_Samples"]]
-            df_copy = df_copy[df_copy["Samples_Range"].isin(metadata_dct["Num_Samples"])]
+        experimentTypesDataFrame = pd.read_csv("data/ExperimentTypes_Series.tsv.gz", sep="\t", index_col=0)
+        speciesDataFrame = pd.read_csv("data/Species_Series.tsv.gz", sep="\t", index_col=0)
 
-        # Filter based on by year.
-        df_copy["Year_Released"] = pd.to_numeric(df_copy["Year_Released"], errors='coerce')
-        df_copy = df_copy[(df_copy["Year_Released"] >= int(metadata_dct["Years"][0])) & (df_copy["Year_Released"] <= int(metadata_dct["Years"][1]))]
-        return df_copy
+        experimentTypeSeries = experimentTypesDataFrame[experimentTypesDataFrame['Experiment_Type'].isin(metadataDict["Experiment_Types"])].index
+        speciesSeries = speciesDataFrame[speciesDataFrame['Species'].isin(metadataDict["Species"])].index
+
+        commonSeries = set(fullSeries) & set(experimentTypeSeries) & set(speciesSeries)
+
+        return commonSeries
+    
+    # Queries the embedding database based on the closest results to the user IDs input.
+    def search_embeddings(self, metaSeries, searchSeries):
+        chroma_client = chromadb.PersistentClient(path="data/Embeddings")
+        my_collection = chroma_client.get_collection(name="geo_collection")
+
+        embeddings_dict = my_collection.get(ids=searchSeries, include=["embeddings"])
+        search_embedding = np.mean(embeddings_dict["embeddings"], axis=0)
+
+        # It returns the search series, so we need to return that many more than the goal amount.
+        n_results = 50 + len(searchSeries)
+        results = my_collection.query(query_embeddings=search_embedding, n_results=n_results)
+
+        ranked_series = results["ids"][0]
+
+        # Remove the search series.
+        for s in searchSeries:
+            ranked_series.remove(s)
+
+        return ranked_series
 
     # Generates results once user input is received.
     def bottom_half_html(self, ids, metadata_dct):
@@ -151,24 +196,6 @@ class WebApp:
                 </body>
             </html>
             """
-
-# Returns a dictionary of the closest results to the user IDs input.
-def generate_id_query_results(input_ids):
-    chroma_client = chromadb.PersistentClient(path="data/Embeddings")
-    my_collection = chroma_client.get_collection(name="geo_collection")
-
-    input_embeddings = []
-
-    for id in input_ids:
-        data_dict = my_collection.get(ids=id, include=["embeddings"])
-        input_embeddings.append(data_dict["embeddings"][0])
-
-    input_embeddings = np.array(input_embeddings)
-    avg_embedding = np.mean(input_embeddings, axis=0).tolist()
-
-    similarityResults = my_collection.query(query_embeddings=avg_embedding, n_results=50)
-
-    return similarityResults["ids"][0]
 
 # Calls generate_query_results and writes results in html code, to display results in a table.
 def generate_rows(valid_ids=[], metadata_dct={}):
@@ -221,10 +248,6 @@ def generate_rows(valid_ids=[], metadata_dct={}):
 if __name__ == '__main__':
     style_path = os.path.abspath("styles.css")
     icon_path = os.path.abspath("geo_logo.ico")
-    # pagination_path = os.path.abspath("pagination.js")
-
-    global data_frame
-    data_frame = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t", index_col=0)
 
     cherrypy.config.update({
         'server.socket_host': '0.0.0.0',

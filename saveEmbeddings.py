@@ -63,8 +63,10 @@ with gzip.open(in_tsv_file_path) as in_tsv_file:
             title = line_items[1]
             summary = line_items[2]
             overall_design = line_items[3]
+            experiment_types = line_items[4].split(" | ")
+            species = line_items[8].split(" | ")
 
             text = clean_text(f"{title} {summary} {overall_design}")
             embedding = model([text])[0].tolist()
 
-            embedding_collection.add(embeddings = embedding, ids = gse)
+            embedding_collection.add(ids = gse, embeddings = embedding)
