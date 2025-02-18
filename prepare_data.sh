@@ -37,4 +37,4 @@ docker run --rm \
     -v $(pwd)/tmp/Models:/Models \
     --user $(id -u):$(id -g) \
     srp33/geofinder \
-        python saveEmbeddings.py "${filtered_geo_tsv_file_path}" "thenlper/gte-large" "${embeddings_dir_path}"
+        python saveEmbeddings.py "${filtered_geo_tsv_file_path}" "${experiment_types_file_path}" "${species_file_path}" "thenlper/gte-large" "${embeddings_dir_path}"

@@ -31,8 +31,16 @@ def remove_html_tags(text):
     return clean_text
 
 in_tsv_file_path = sys.argv[1]
-checkpoint = sys.argv[2]
-embeddings_dir_path = sys.argv[3]
+experiment_types_file_path = sys.argv[2]
+species_file_path = sys.argv[3]
+checkpoint = sys.argv[4]
+embeddings_dir_path = sys.argv[5]
+
+with gzip.open(experiment_types_file_path) as the_file:
+    experiment_types = the_file.read().decode().rstrip("\n").split("\n")
+
+with gzip.open(species_file_path) as the_file:
+    species = the_file.read().decode().rstrip("\n").split("\n")
 
 model = embedding_functions.SentenceTransformerEmbeddingFunction(model_name=checkpoint)
 
@@ -63,10 +71,17 @@ with gzip.open(in_tsv_file_path) as in_tsv_file:
             title = line_items[1]
             summary = line_items[2]
             overall_design = line_items[3]
-            experiment_types = line_items[4].split(" | ")
-            species = line_items[8].split(" | ")
+            series_experiment_types = line_items[4].split(" | ")
+            series_species = line_items[8].split(" | ")
 
             text = clean_text(f"{title} {summary} {overall_design}")
             embedding = model([text])[0].tolist()
 
-            embedding_collection.add(ids = gse, embeddings = embedding)
+            metadatas = {}
+            for x in experiment_types:
+                metadatas[x] = x in series_experiment_types
+            for s in species:
+                metadatas[s] = s in series_species
+
+            embedding_collection.add(ids = gse, embeddings = embedding, metadatas = metadatas)
+            break
