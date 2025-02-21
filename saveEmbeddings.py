@@ -79,7 +79,7 @@ with gzip.open(in_tsv_file_path) as in_tsv_file:
             text = clean_text(f"{title} {summary} {overall_design}")
             embedding = model([text])[0].tolist()
 
-            metadatas = {"year": year, "number_samples_range": samples_range}
+            metadatas = {"number_samples_range": samples_range, "year": year}
             for x in experiment_types:
                 metadatas[x] = x in series_experiment_types
             for s in species:

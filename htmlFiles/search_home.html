@@ -29,8 +29,6 @@
         </div>
     </div>
 
-    <div id="errorPlaceholder"><p></p></div>
-
     <h2>Filters:</h2>
     <div class="submit-container">
         <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
@@ -41,36 +39,7 @@
                 <div class="field has-text-weight-bold">
                     Number of Samples:
                 </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="1-10" value="numSamplesRange" checked> 1 - 10
-                    </label>
-                </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="11-50" value="numSamplesRange" checked> 11 - 50
-                    </label>
-                </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="51-100" value="numSamplesRange" checked> 51 - 100
-                    </label>
-                </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="101-500" value="numSamplesRange" checked> 101 - 500
-                    </label>
-                </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="501-1000" value="numSamplesRange" checked> 501 - 1000
-                    </label>
-                </div>
-                <div class="field">
-                    <label class='checkbox'>
-                        <input type="checkbox" name="1000+" value="numSamplesRange" checked> 1000+
-                    </label>
-                </div>
+                {{ numSamples }}
             </div>
             <div class="column is-2">
                 <div class="field has-text-weight-bold">
@@ -104,109 +73,124 @@
             </div>
         </div>
     </div>
+
+    <div id="outputPlaceholder" class="container pt-6"></div>
 </main>
 
 <script>
-$(document).ready(function() {
-    $('#inputText').keyup(function() {
-        checkTextareaContent();
-    });
-
-    function checkTextareaContent(){
-        var inputText = $('#inputText').val();
-        if (inputText.length > 0) {
-            $('#submitButton').prop('disabled', false);
-            $(this).removeClass('grayed-out'); 
-        } else {
-            $('#submitButton').prop('disabled', true);
-        }
-    }
-
-const fileInput = document.getElementById('fileInput');
-const inputText = document.getElementById('inputText');
-const errorPlaceholder = document.getElementById('errorPlaceholder');
-
-// Get modal and icon elements
-const modal = document.getElementById('info-modal');
-const infoIcon = document.getElementById('info-icon');
-const closeModalBtn = document.getElementById('close-modal');
-
-// When the user clicks on the information icon, open the modal
-infoIcon.addEventListener('click', () => {
-    modal.style.display = "block";
-});
-
-// When the user clicks on the "X" button, close the modal
-closeModalBtn.addEventListener('click', () => {
-    modal.style.display = "none";
-});
-
-// Get the paperclip icon element
-const uploadIcon = document.querySelector('.icon i'); // Using querySelector to select the icon
-
-// Trigger the file input when the paperclip icon is clicked
-uploadIcon.addEventListener('click', function() {
-    fileInput.click(); 
-});
-
-fileInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    
-    if (file) {
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const textContent = e.target.result; // file's text content
-
-            const pattern = /Accession: (GSE\d+)/g; // regex pattern
-            const matches = [];
-            let match;
-            while((match = pattern.exec(textContent)) !== null) {
-                matches.push(match[1]);
-            }
-
-            if (matches.length > 0){
-                inputText.value =inputText.value + matches.join(', ');
-            } else {
-                errorPlaceholder.innerHTML = "<span style='color: red;'>Didn't find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!</span>";
-            }
+    $(document).ready(function() {
+        $('#inputText').keyup(function() {
             checkTextareaContent();
-        };
-        reader.readAsText(file);
-        fileInput.value = "";
-    }
-});
-
-    $('#submitButton').click(function() {
-        var inputText = $('#inputText').val();
-        var checkboxDict = {};
-        
-        $('input[type=checkbox]').each(function() {
-            checkboxDict[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
         });
 
-        // $(this).prop('disabled', true); // Disable the button
-        // $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
+        function checkTextareaContent() {
+            var inputText = $('#inputText').val();
 
-        $.ajax({
-            type: 'POST',
-            url: '/geofinder/query',
-            data: {
-                searchSeries: inputText,
-                checkboxDict: JSON.stringify(checkboxDict),
-                startYear: document.getElementById('startYear').value,
-                endYear: document.getElementById('endYear').value
-            },
-            success: function(response) {
-                // Handle success response
-                $('#content').html(response);
-                $('#inputText').removeClass('grayed-out');
-            },
-            error: function(xhr, status, error) {
-                // Handle error
-                console.error(xhr.responseText);
+            if (inputText.length > 0) {
+                $('#submitButton').prop('disabled', false);
+                $(this).removeClass('grayed-out'); 
+            } else {
+                $('#submitButton').prop('disabled', true);
+            }
+        }
+
+        function formatErrorMessage(msg) {
+            return `<div class='content has-text-danger has-text-left is-size-5'>${msg}</div>`;
+        }
+
+        const fileInput = document.getElementById('fileInput');
+        const inputText = document.getElementById('inputText');
+        const outputPlaceholder = document.getElementById('outputPlaceholder');
+
+        // Get modal and icon elements
+        const modal = document.getElementById('info-modal');
+        const infoIcon = document.getElementById('info-icon');
+        const closeModalBtn = document.getElementById('close-modal');
+
+        // When the user clicks on the information icon, open the modal
+        infoIcon.addEventListener('click', () => {
+            modal.style.display = "block";
+        });
+
+        // When the user clicks on the "X" button, close the modal
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = "none";
+        });
+
+        // Get the paperclip icon element
+        const uploadIcon = document.querySelector('.icon i'); // Using querySelector to select the icon
+
+        // Trigger the file input when the paperclip icon is clicked
+        uploadIcon.addEventListener('click', function() {
+            fileInput.click(); 
+        });
+
+        fileInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const textContent = e.target.result; // file's text content
+
+                    const pattern = /Accession: (GSE\d+)/g; // regex pattern
+                    const matches = [];
+                    let match;
+                    while((match = pattern.exec(textContent)) !== null) {
+                        matches.push(match[1]);
+                    }
+
+                    if (matches.length > 0){
+                        inputText.value =inputText.value + matches.join(', ');
+                    } else {
+                        outputPlaceholder.innerHTML = formatErrorMessage("We did not find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!");
+                    }
+
+                    checkTextareaContent();
+                };
+                reader.readAsText(file);
+                fileInput.value = "";
             }
         });
+
+        $('#submitButton').click(function() {
+            $('#outputPlaceholder').html(formatErrorMessage("Please wait..."));
+
+            var inputText = $('#inputText').val();
+            var checkboxDict = {};
+            
+            $('input[type=checkbox]').each(function() {
+                checkboxDict[$(this).attr('name')] = $(this).is(':checked') ? $(this).val() : '';
+            });
+
+            // $(this).prop('disabled', true); // Disable the button
+            // $('#inputText').addClass('grayed-out'); // Add gray color and disable textarea
+
+            $.ajax({
+                type: 'POST',
+                url: '/geofinder/query',
+                data: {
+                    searchSeries: inputText,
+                    checkboxDict: JSON.stringify(checkboxDict),
+                    startYear: document.getElementById('startYear').value,
+                    endYear: document.getElementById('endYear').value
+                },
+                success: function(response) {
+                    if (response.startsWith("ERROR: ")) {
+                        $('#outputPlaceholder').html(formatErrorMessage(response.replace("ERROR: ", "")));
+                    }
+                    else {
+                        $('#outputPlaceholder').html(response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#outputPlaceholder').html(formatErrorMessage(xhr.responseText));
+                    console.error("An error occurred");
+                    console.error(xhr.responseText);
+                }
+            });
+
+            document.getElementById('outputPlaceholder').scrollIntoView({ behavior: "smooth", block: "start" });
+        });
     });
-});
 </script>
