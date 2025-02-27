@@ -226,23 +226,24 @@ class WebApp:
 
     def generateResultsTable(self, topSeries):
         table = f'''
-            <div class="table-container">
-            <table class="table is-bordered is-hoverable is-fullwidth">
-            <caption>Top results (up to 100):</caption>
-                <thead>
-                    <tr>
-                        <th>GSE ID</th>
-                        <th>Title</th>
-                        <th>Summary</th>
-                        <th>Overall Design</th>
-                        <th>Experiment Type(s)</th>
-                        <th>Species</th>
-                        <th># Samples</th>
-                        <th>Year Released</th>
-                        <th>Super Series</th>
-                        <th>Sub Series</th>
-                    </tr>
-                </thead><tbody>'''
+            <div class="table-container mt-4">
+                <div class="title is-3">Top results (up to 100):</div>
+                <table class="table is-bordered is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>GSE ID</th>
+                            <th>Title</th>
+                            <th>Summary</th>
+                            <th>Overall Design</th>
+                            <th>Experiment Type(s)</th>
+                            <th>Species</th>
+                            <th># Samples</th>
+                            <th>Year Released</th>
+                            <th>Super Series</th>
+                            <th>Sub Series</th>
+                        </tr>
+                    </thead>
+                    <tbody>'''
 
         # The range of this for loop makes it so that the ID that a user is querying on is not included in the results table.
         for id in topSeries:

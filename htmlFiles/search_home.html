@@ -162,7 +162,7 @@
         });
 
         $('#submitButton').click(function() {
-            $('#outputPlaceholder').html(formatErrorMessage("Please wait..."));
+            $('#outputPlaceholder').html("<div class='title is-3 has-text-danger'>Please wait...</div>");
 
             var inputText = $('#inputText').val();
             var checkboxDict = {};
