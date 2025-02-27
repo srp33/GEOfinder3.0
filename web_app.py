@@ -13,7 +13,7 @@ import traceback
 class WebApp:
     def __init__(self):
         print("Initializing...")
-        self.df = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t", index_col=0)
+        self.df = pd.read_csv("data/FilteredGEO.tsv.gz", sep="\t", index_col=0).fillna('')
 
         chroma_client = chromadb.PersistentClient(path="data/Embeddings")
         self.embedding_db = chroma_client.get_collection(name="geo_collection")
@@ -33,7 +33,7 @@ class WebApp:
         self.earliest_start_year = 2001
         self.this_year = datetime.now().year
 
-        self.MAX_NUM_RESULTS = 50
+        self.MAX_NUM_RESULTS = 100
 
     @cherrypy.expose
     def index(self):
@@ -63,7 +63,7 @@ class WebApp:
 
             not_found_ids = self.validate_ids(searchSeries)
             if len(not_found_ids) > 0:
-                return self.format_error_msg(f'''The following ID(s) you entered are currently not available in GEOfinder: {', '.join(not_found_ids)}. This could be because they are not valid GEO accession number(s) or that we have filtered them for some reason.''')
+                return self.format_error_msg(f'''The following ID(s) you entered are currently not available in GEOfinder: {', '.join(not_found_ids)}. This could be because they are not valid GEO accession number(s) or that we have filtered them for some reason. Please remove the ID(s) from the search box and re-submit.''')
             
             checkboxDict = json.loads(checkboxDict)
 
@@ -72,11 +72,11 @@ class WebApp:
             if errorMsg != "":
                 return self.format_error_msg(errorMsg)
 
-            # metaSeries = self.filter_by_metas(metadataDict, fullDataFrame)
+            metaSeries = self.filter_by_metas(metadataDict)
 
-            topSeries, distances = self.search_embeddings(searchSeries, metadataDict)
+            topSeries = self.search_embeddings(searchSeries, metaSeries, metadataDict)
 
-            return self.generateResultsTable(topSeries, distances)
+            return self.generateResultsTable(topSeries)
         except:
             return self.format_error_msg(traceback.format_exc())
 
@@ -159,77 +159,85 @@ class WebApp:
             metadataDict, "Please check at least one box indicating the species."
 
         return metadataDict, ""
-    
+
     # Filters series based on the user's selections.
-    # def filter_by_metas(self, metadataDict, fullDataFrame):
-    #     # matchingDataFrame = fullDataFrame.copy(deep=True)
+    def filter_by_metas(self, metadataDict):
+        df = self.df.copy()
 
-    #     print(type(metadataDict["Start_Year"]))
-    #     fullSeries = fullDataFrame[(fullDataFrame['Samples_Range'].isin(metadataDict["Num_Samples_Range"])) & (fullDataFrame["Year_Released"] >= metadataDict["Start_Year"]) & (fullDataFrame["Year_Released"] <= metadataDict["End_Year"])].index
+        experimentTypesDF = pd.read_csv("data/ExperimentTypes_Series.tsv.gz", sep="\t", index_col=0)
+        speciesDF = pd.read_csv("data/Species_Series.tsv.gz", sep="\t", index_col=0)
 
-    #     experimentTypesDataFrame = pd.read_csv("data/ExperimentTypes_Series.tsv.gz", sep="\t", index_col=0)
-    #     speciesDataFrame = pd.read_csv("data/Species_Series.tsv.gz", sep="\t", index_col=0)
+        firstSeries = df[(df['Samples_Range'].isin(metadataDict["number_samples_range"])) & (df["Year_Released"] >= metadataDict["start_year"]) & (df["Year_Released"] <= metadataDict["end_year"])].index
+        experimentTypeSeries = experimentTypesDF[experimentTypesDF['Experiment_Type'].isin(metadataDict["experiment_types"])].index
+        speciesSeries = speciesDF[speciesDF['Species'].isin(metadataDict["species"])].index
 
-    #     experimentTypeSeries = experimentTypesDataFrame[experimentTypesDataFrame['Experiment_Type'].isin(metadataDict["Experiment_Types"])].index
-    #     speciesSeries = speciesDataFrame[speciesDataFrame['Species'].isin(metadataDict["Species"])].index
+        commonSeries = set(firstSeries) & set(experimentTypeSeries) & set(speciesSeries)
 
-    #     commonSeries = set(fullSeries) & set(experimentTypeSeries) & set(speciesSeries)
-
-    #     return commonSeries
+        return commonSeries
     
     # Queries the embedding database based on the closest results to the user IDs input.
-    def search_embeddings(self, searchSeries, metadataDict):
+    def search_embeddings(self, searchSeries, metaSeriesSet, metadataDict):
         embeddingsDict = self.embedding_db.get(ids=searchSeries, include=["embeddings", "metadatas"])
         searchEmbedding = np.mean(embeddingsDict["embeddings"], axis=0)
 
-        whereDict = {"$and": [{"number_samples_range": {"$in": metadataDict["number_samples_range"]}},
-                              {"year": {"$gte": metadataDict["start_year"]}},
-                              {"year": {"$lte": metadataDict["end_year"]}}
-        ]}
+        # whereDict = {"$and": [{"number_samples_range": {"$in": metadataDict["number_samples_range"]}},
+        #                       {"year": {"$gte": metadataDict["start_year"]}},
+        #                       {"year": {"$lte": metadataDict["end_year"]}}
+        # ]}
 
-        subWhereDict = {"$or": []}
-        for expType in self.experiment_types:
-            subWhereDict["$or"].append({expType: {"$eq": expType in metadataDict["experiment_types"]}})
-        whereDict["$and"].append(subWhereDict)
+        # subWhereDict = {"$or": []}
+        # for expType in self.experiment_types:
+        #     subWhereDict["$or"].append({expType: {"$eq": expType in metadataDict["experiment_types"]}})
+        # whereDict["$and"].append(subWhereDict)
 
-        subWhereDict = {"$or": []}
-        for s in self.species:
-            subWhereDict["$or"].append({s: {"$eq": s in metadataDict["species"]}})
-        whereDict["$and"].append(subWhereDict)
+        # subWhereDict = {"$or": []}
+        # for s in self.species:
+        #     subWhereDict["$or"].append({s: {"$eq": s in metadataDict["species"]}})
+        # whereDict["$and"].append(subWhereDict)
 
         # It returns the search series, so we need to return that many more than the goal amount.
-        nResults = self.MAX_NUM_RESULTS + len(searchSeries)
+        # nResults = self.MAX_NUM_RESULTS + len(searchSeries)
+        # Alternative option: https://github.com/weaviate/weaviate
+        # Or Qdrant: https://qdrant.tech/articles/vector-search-filtering/
         results = self.embedding_db.query(
             query_embeddings=searchEmbedding,
-            n_results=nResults,
-            where=whereDict,
+            n_results=50000,
             include=["distances"])
 
         rankedSeries = results["ids"][0]
-        distances = results["distances"][0]
+        # distances = results["distances"][0]
 
         # Remove the search series.
-        for s in searchSeries:
-            i = searchSeries.index(s)
-            del rankedSeries[i]
-            del distances[i]
+        # for s in searchSeries:
+        #     i = searchSeries.index(s)
+        #     del rankedSeries[i]
+            # del distances[i]
 
-        return rankedSeries, distances
+        topSeries = []
 
-    def generateResultsTable(self, topSeries, distances):
-        # results_df = self.df[self.df["GSE"].isin(topSeries)]
-        # results_df = results_df.reset_index(drop=True)
+        while len(rankedSeries) > 0 and len(topSeries) < self.MAX_NUM_RESULTS:
+            series = rankedSeries.pop(0)
+            if series in metaSeriesSet and series not in searchSeries:
+                topSeries.append(series)
 
+        return topSeries
+
+        # return rankedSeries, distances
+
+    def generateResultsTable(self, topSeries):
         table = f'''
-            <table class="table is-bordered is-hoverable">
-            <caption>Top results:</caption>
+            <div class="table-container">
+            <table class="table is-bordered is-hoverable is-fullwidth">
+            <caption>Top results (up to 100):</caption>
                 <thead>
                     <tr>
                         <th>GSE ID</th>
+                        <th>Title</th>
                         <th>Summary</th>
+                        <th>Overall Design</th>
+                        <th>Experiment Type(s)</th>
                         <th>Species</th>
                         <th># Samples</th>
-                        <th>Experiment Type</th>
                         <th>Year Released</th>
                         <th>Super Series</th>
                         <th>Sub Series</th>
@@ -243,19 +251,24 @@ class WebApp:
             table += '<tr>'
 
             table += f'''<td><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={id}" target="_blank">{id}</a></td> \
-                <td>{row["Summary"]}</td> \
+                <td>{self.replace_urls(row["Title"])}</td> \
+                <td>{self.replace_urls(row["Summary"])}</td> \
+                <td>{self.replace_urls(row["Overall_Design"])}</td> \
+                <td>{row["Experiment_Type"]}</td> \
                 <td>{row["Species"]}</td> \
                 <td>{row["Num_Samples"]}</td> \
-                <td>{row["Experiment_Type"]}</td> \
                 <td>{row["Year_Released"]}</td> \
                 <td>{row["SuperSeries_GSE"]}</td> \
                 <td>{row["SubSeries_GSE"]}</td>'''
 
             table += '</tr>'
         
-        table += f'''</tbody></table>'''
+        table += f'''</tbody></table></div>'''
         
         return table
+    
+    def replace_urls(self, text):
+        return re.sub(r"(https?:\/\/\S+|www\.\S+)", "[url]", text)
 
 if __name__ == '__main__':
     style_path = os.path.abspath("styles.css")

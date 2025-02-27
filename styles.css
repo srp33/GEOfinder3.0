@@ -44,7 +44,7 @@ caption{
 #inputText::placeholder {
     font-size: 26px; 
 }
-.table {
+/*.table {
     width: 100%;
     table-layout: auto;
 }
@@ -53,7 +53,7 @@ caption{
 }
 .table tbody tr:nth-child(odd) {
     background-color: #efefef;
-}
+}*/
 .footer {
     padding: 1.5rem;
 }
@@ -64,17 +64,17 @@ caption{
 .footer a {
     margin: 0 40px; 
 }
-button, .boxes{
+/* button, .boxes{
     cursor: pointer;
-}
-tr:hover td{
+} */
+/*tr:hover td{
     background-color: rgb(234, 254, 255);
-}
+}*/
 @media(prefers-color-scheme: dark) {
     body {
         color: white;
     }
-    .table tbody tr:nth-child(even) {
+/*    .table tbody tr:nth-child(even) {
     background-color: #333333;
     }
     .table tbody tr:nth-child(odd) {
@@ -83,16 +83,17 @@ tr:hover td{
     tr:hover td{
         background-color: black;
     }
+*/
 }
 .grayed-out {
     color: #888888;
 }
-.submit-container {
+/* .submit-container {
     display: flex;
     justify-content: flex-end;
     margin-right: 25px; 
     margin-top: -30px;
-}
+} */
 /*.pagination {
     margin-top: 25px;
     font-size: 20px;
@@ -145,7 +146,6 @@ tr:hover td{
     display: inline-block;
     padding: 10px;
 }
-
 .modal {
     display: none;
     position: fixed;
@@ -160,17 +160,15 @@ tr:hover td{
     border: 1px solid #ccc;
     padding: 20px;
     z-index: 1000; 
-} 
-
+}
 .modal-content {
-    /* background-color: #fff; */
-    color:#000;
+    background-color: #ffffff;
+    color: #000000;
     /* margin: 15% auto; */
-    padding: 15px; 
+    /* padding: 15px;  */
     width: 650px;
     text-align: left;
 }
-
 .close-btn {
     color: #aaa;
     font-size: 28px;
@@ -180,9 +178,22 @@ tr:hover td{
     right: 10px;
     cursor: pointer;
 }
-
 .close-btn:hover, .close-btn:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+#outputPlaceholder {
+    text-align: left;
+}
+#tableWrapper {
+    width: 100%; /* Ensures it covers full width of the parent */
+    overflow-x: auto; /* Enables horizontal scrolling if needed */
+    display: block; /* Prevents flex/grid issues */
+}
+
+#tableWrapper table {
+    width: auto; /* Allows the table to expand beyond the container */
+    min-width: 100%; /* Ensures table doesn't shrink too much */
+    table-layout: auto; /* Keeps flexible column sizing */
 }

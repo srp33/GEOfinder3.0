@@ -1,24 +1,27 @@
 <main class="my-4 mx-6">
     <div class="search-container" style="position: relative;">
-        <textarea id="inputText" class="content is-medium textarea has-fixed-size textarea is-hovered textarea is-info mt-2" placeholder="Enter GSE identifiers, separated by commas (example: GSE123, GSE456)." rows="10"></textarea>
-        <input type="file" id="fileInput" style="display: none;" />      
-        
-        <!-- Paperclip Icon (File Input) -->
-        <div class="icon fas fa-2x" style="cursor: pointer; position: absolute; bottom: 25px; left: 15px; z-index: 1;">
-            <i class="fa-solid fa-paperclip"></i>
-        </div>  
+        <textarea id="inputText" class="content is-large textarea has-fixed-size textarea is-hovered textarea is-info mt-2" placeholder="Enter GSE identifiers, separated by commas (example: GSE123, GSE456)." rows="10"></textarea>
+    </div>
 
+    <div class="is-pulled-right mt-4">
         <!-- Information Icon -->
-        <div id="info-icon" class="info-icon" title="Click for detailed instructions!" style="cursor: pointer; position: absolute; bottom: 5px; left: 50px;">
+        <div id="info-icon" class="info-icon" title="Click for detailed instructions!">
             <i class="fa-solid fa-circle-info"></i>
         </div>
+
+        <!-- Paperclip Icon (File Input) -->
+        <div class="icon fas fa-2x mr-4" style="cursor: pointer">
+            <i class="fa-solid fa-paperclip"></i>
+        </div>
+
+        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
     </div>
-    
+
+    <input type="file" id="fileInput" style="display: none;" />
+
     <!-- Modal Window -->
     <div id="info-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-modal" class="close-btn">&times;</span>
-
+        <!-- <div class="modal-content"> -->
             <div class="content mt-6">Every year, researchers perform thousands of studies using high-throughput, molecular data. Journal editors and research funders require that these datasets be shared publicly so that others can verify and reuse them. Repositories like <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> (GEO) now store hundreds of thousands of high-throughput, molecular datasets. These massive amounts of data offer exciting opportunities for researchers to reuse the data. However, due to the sheer number of datasets and a lack of formal annotations to describe the data, it is difficult to <a href="https://www.nature.com/articles/sdata201618" target="_blank">find</a> datasets relevant to a particular research topic. This is especially true when researchers seek to gather many datasets on a topic. We created GEOfinder to help improve this process.</div>
 
             <div class="content">GEOfinder assumes that a researcher has previously found some datasets relevant to their research topic and wishes to find more. They might have found these datasets by reading journal articles or using GEO's "Advanced Search" feature. Whereas GEO supports keyword-based searches, GEOfinder uses <a href="https://en.wikipedia.org/wiki/Semantic_search" target="_blank">semantic search</a>, based on <a href="https://en.wikipedia.org/wiki/Word_embedding" target="_blank">text embeddings</a> derived from a <a href="https://huggingface.co/thenlper/gte-large" target="_blank">large language model</a>. We have found that this approach often outperforms and/or complements GEO's search tool.</div>
@@ -26,32 +29,34 @@
             <div class="content">To get started, you can manually enter GEO accession IDs below. Alternatively, you can use GEO's search tool to find datasets and import them here. To do so, initiate a search <a href="https://www.ncbi.nlm.nih.gov/gds/advanced" target="_blank">here</a>. Then select "Series" under "Entry type" on the left panel. The search results will include a checkbox next to each series. Select the series that align with your research topic. Then click "Send to," select "File," and click "Create File." Import that file in GEOfinder using the upload feature (paperclip icon) below.</div>
         
             <div class="content"><a href="https://lifesciences.byu.edu/directory/stephen-piccolo" target="_blank">Let us know</a> if you run into problems or would like to request additional features.</div>
-        </div>
+
+            <span id="close-modal" class="close-btn">Close</span>
+        <!-- </div> -->
     </div>
 
-    <h2>Filters:</h2>
-    <div class="submit-container">
-        <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button>
-    </div>
-    <div class="boxes">
+    <!-- <h2>Filters:</h2> -->
+    <!-- <div class="submit-container"> -->
+        <!-- <button id="submitButton" class="button is-info subtitle is-4 has-text-black" disabled>Submit</button> -->
+    <!-- </div> -->
+    <div class="boxes mt-4">
         <div class="columns">
-            <div class="column is-2">
-                <div class="field has-text-weight-bold">
-                    Number of Samples:
-                </div>
-                {{ numSamples }}
-            </div>
-            <div class="column is-2">
+            <div class="column is-5">
                 <div class="field has-text-weight-bold">
                     Experiment Type(s):
                 </div>
                 {{ experimentTypes }}
             </div>
-            <div class="column is-2">
+            <div class="column is-3">
                 <div class="field has-text-weight-bold">
                     Species:
                 </div>
                 {{ species }}
+            </div>
+            <div class="column is-2">
+                <div class="field has-text-weight-bold">
+                    Number of Samples:
+                </div>
+                {{ numSamples }}
             </div>
             <div class="column is-2">
                 <div class="field has-text-weight-bold">
@@ -74,7 +79,7 @@
         </div>
     </div>
 
-    <div id="outputPlaceholder" class="container pt-6"></div>
+    <div id="outputPlaceholder" class="content"></div>
 </main>
 
 <script>
@@ -141,13 +146,16 @@
                     }
 
                     if (matches.length > 0){
-                        inputText.value =inputText.value + matches.join(', ');
+                        inputText.value = matches.join(', ');
                     } else {
-                        outputPlaceholder.innerHTML = formatErrorMessage("We did not find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!");
+                        $('#outputPlaceholder').html(formatErrorMessage("We did not find any GEO accession ID's in this file. It could be because the file was not retrieved from GEO correctly. Check our instructions and contact us if you still have questions!"));
                     }
+
+                    document.getElementById('outputPlaceholder').scrollIntoView({ behavior: "smooth", block: "start" });
 
                     checkTextareaContent();
                 };
+
                 reader.readAsText(file);
                 fileInput.value = "";
             }
