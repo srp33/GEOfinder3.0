@@ -5,8 +5,8 @@
 
     <div class="is-pulled-right mt-4">
         <!-- Information Icon -->
-        <div id="info-icon" class="info-icon" title="Click for detailed instructions!">
-            <i class="fa-solid fa-circle-info"></i>
+        <div class="info-icon" title="Click for detailed instructions!">
+            <i id="info-icon" class="fa-solid fa-circle-info"></i>
         </div>
 
         <!-- Paperclip Icon (File Input) -->
@@ -21,7 +21,7 @@
 
     <!-- Modal Window -->
     <div id="info-modal" class="modal">
-        <!-- <div class="modal-content"> -->
+        <div class="modal-content">
             <div class="content mt-6">Every year, researchers perform thousands of studies using high-throughput, molecular data. Journal editors and research funders require that these datasets be shared publicly so that others can verify and reuse them. Repositories like <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">Gene Expression Omnibus</a> (GEO) now store hundreds of thousands of high-throughput, molecular datasets. These massive amounts of data offer exciting opportunities for researchers to reuse the data. However, due to the sheer number of datasets and a lack of formal annotations to describe the data, it is difficult to <a href="https://www.nature.com/articles/sdata201618" target="_blank">find</a> datasets relevant to a particular research topic. This is especially true when researchers seek to gather many datasets on a topic. We created GEOfinder to help improve this process.</div>
 
             <div class="content">GEOfinder assumes that a researcher has previously found some datasets relevant to their research topic and wishes to find more. They might have found these datasets by reading journal articles or using GEO's "Advanced Search" feature. Whereas GEO supports keyword-based searches, GEOfinder uses <a href="https://en.wikipedia.org/wiki/Semantic_search" target="_blank">semantic search</a>, based on <a href="https://en.wikipedia.org/wiki/Word_embedding" target="_blank">text embeddings</a> derived from a <a href="https://huggingface.co/thenlper/gte-large" target="_blank">large language model</a>. We have found that this approach often outperforms and/or complements GEO's search tool.</div>
@@ -31,7 +31,7 @@
             <div class="content"><a href="https://lifesciences.byu.edu/directory/stephen-piccolo" target="_blank">Let us know</a> if you run into problems or would like to request additional features.</div>
 
             <span id="close-modal" class="close-btn">Close</span>
-        <!-- </div> -->
+        </div>
     </div>
 
     <!-- <h2>Filters:</h2> -->
@@ -100,7 +100,7 @@
         }
 
         function formatErrorMessage(msg) {
-            return `<div class='content has-text-danger has-text-left is-size-5'>${msg}</div>`;
+            return `<div class='content has-text-danger has-text-left is-size-3 mt-4'>${msg}</div>`;
         }
 
         const fileInput = document.getElementById('fileInput');
@@ -120,6 +120,14 @@
         // When the user clicks on the "X" button, close the modal
         closeModalBtn.addEventListener('click', () => {
             modal.style.display = "none";
+        });
+
+        // Add event listener to close modal when clicking outside of it
+        document.addEventListener('click', (event) => {
+            // Check if the modal is open and the click is outside the modal
+            if (modal.style.display === "block" && !modal.contains(event.target) && event.target !== infoIcon) {
+                modal.style.display = "none";
+            }
         });
 
         // Get the paperclip icon element
@@ -162,7 +170,7 @@
         });
 
         $('#submitButton').click(function() {
-            $('#outputPlaceholder').html("<div class='title is-3 has-text-danger'>Please wait...</div>");
+            $('#outputPlaceholder').html("<div class='title is-3 has-text-danger mt-4'>Please wait...</div>");
 
             var inputText = $('#inputText').val();
             var checkboxDict = {};

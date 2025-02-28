@@ -1,7 +1,7 @@
 #! /bin/bash
 
-#docker run -i -t --rm \
-docker run -d --rm \
+#docker run -d --rm \
+docker run -i -t --rm \
     -v "$(pwd)":/app \
     --user $(id -u):$(id -g) \
     --name geofinder \

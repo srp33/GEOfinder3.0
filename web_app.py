@@ -69,6 +69,15 @@ class WebApp:
 
             metadataDict, errorMsg = self.make_metadata_dict(checkboxDict, startYear, endYear)
 
+            if len(metadataDict["experiment_types"]) == 0:
+                return self.format_error_msg("Please select at least one experiment type.")
+            
+            if len(metadataDict["species"]) == 0:
+                return self.format_error_msg("Please select at least one species.")
+            
+            if metadataDict["start_year"] > metadataDict["end_year"]:
+                return self.format_error_msg("The end year must be later than the start year.")
+
             if errorMsg != "":
                 return self.format_error_msg(errorMsg)
 
